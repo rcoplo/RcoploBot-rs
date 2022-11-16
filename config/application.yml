@@ -1,0 +1,3 @@
+debug: false
+database_url: "mysql://rcoplobot:cjEDS7FE5RKbz6rZ@rm-uf63h213beeade8093o.mysql.rds.aliyuncs.com:10033/rcoplobot"
+
