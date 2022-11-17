@@ -1,15 +1,19 @@
+use std::thread;
 use std::thread::Thread;
 
 use log::info;
+use regex::Regex;
+use serde_yaml::Value;
 use tokio::time;
 use crate::core::bot::{Bot, Frame};
 use crate::core::Cq;
 use crate::core::event::*;
 use crate::core::message::*;
 use crate::domain::Setu;
-use crate::handler::api::get_lolicon;
+use crate::handler::api::{get_lolicon, get_lolicon_list};
+use crate::handler::{handle_frame, handle_frame_return, meow_log};
 use crate::service::{CONTEXT, SetuService};
-use crate::util::regex_utils::contain;
+use crate::util::regex_utils::{contain, replace_regex};
 
 
 pub async fn setu_module_handle(event: &Event, bot: &mut Bot) {
@@ -27,62 +31,91 @@ pub async fn setu_module_handle(event: &Event, bot: &mut Bot) {
 
 pub async fn friend_handle(event: &FriendMessageEvent, bot: &mut Bot) {
     let mut bot = bot.clone();
-    if contain(event.raw_message.as_str(), vec!["/色图", "/瑟图"]) {
+    if contain(&event.raw_message, vec!["/色图", "/瑟图"]) {
+        meow_log("get_setu_friend", 0).await;
         get_setu_friend(&event, &mut bot).await;
     };
-    if contain(event.raw_message.as_str(), vec!["/rand 色图", "/rand 瑟图"]) {
+    if contain(&event.raw_message, vec!["/rand 色图", "/rand 瑟图"]) {
+        meow_log("rand_setu_friend", 0).await;
         rand_setu_friend(&event, &mut bot).await;
+    };
+    if contain(&event.raw_message, vec![r"(\d)张色图"]) {
+        meow_log("get_setu_friend_list", 0).await;
+        get_setu_friend_list(&event, &mut bot).await;
     };
 }
 
-pub async fn group_handle(event:& GroupMessageEvent, bot: &mut Bot) {
+pub async fn group_handle(event: &GroupMessageEvent, bot: &mut Bot) {
     let mut bot = bot.clone();
-    if contain(event.raw_message.as_str(), vec!["/色图", "/瑟图"]) {
+    if contain(&event.raw_message, vec!["/色图", "/瑟图"]) {
+        meow_log("get_setu_group", 0).await;
         get_setu_group(&event, &mut bot).await;
     };
-    if contain(event.raw_message.as_str(), vec!["/rand 色图", "/rand 瑟图"]) {
+    if contain(&event.raw_message, vec!["/rand 色图", "/rand 瑟图"]) {
+        meow_log("rand_setu_group", 0).await;
         rand_setu_group(&event, &mut bot).await;
+    };
+    if contain(&event.raw_message, vec![r"(\d)张色图"]) {
+        meow_log("get_setu_group_list", 0).await;
+        get_setu_group_list(&event, &mut bot).await;
+
     };
 }
 
 async fn get_setu_friend(event: &FriendMessageEvent, bot: &mut Bot) {
+    let mut bot = bot.clone();
     let lolicon = get_lolicon().await;
+    match lolicon {
+        None => {
+            rand_setu_friend(&event, &mut bot).await;
+        }
+        Some(setu) => {
+            let vec = vec![
+                text(format!("Title: {}\n", setu.title.unwrap()).as_str()),
+                text(format!("pid: {}\n", setu.pid.unwrap()).as_str()),
+                image(setu.urls.unwrap().as_str()),
+            ];
+            let frame = bot.send_private_msg(event.user_id, vec).await;
+            handle_frame(frame).await;
+        }
+    }
+}
+
+async fn get_setu_friend_list(event: &FriendMessageEvent, bot: &mut Bot) {
+    let mut bot = bot.clone();
+    let event = event;
+    let result = Regex::new(r"(?P<last>\d+)(.*)").unwrap();
+    let cow = result.replace(event.raw_message.as_str(), "$last").parse::<i64>().unwrap();
+
+    let lolicon = get_lolicon_list(cow).await;
     match lolicon {
         None => {}
         Some(setu) => {
-            let vec = vec![
-                text(format!("Title: {}\n", setu.title.unwrap())),
-                text(format!("pid: {}\n", setu.pid.unwrap())),
-                image(setu.urls.unwrap()),
-            ];
-            let frame = bot.send_private_msg(event.user_id, vec).await;
-            match frame {
-                None => {}
-                Some(frame) => {
-                    info!("[Bot] {} - {}",frame.ok,frame.message_id);
-                }
+            for s in setu {
+                let vec = vec![
+                    text(format!("Title: {}\n", s.title.unwrap()).as_str()),
+                    text(format!("pid: {}\n", s.pid.unwrap()).as_str()),
+                    image(s.urls.unwrap().as_str()),
+                ];
+                let frame = bot.send_private_msg(event.user_id, vec).await;
+                handle_frame(frame).await;
             }
         }
     }
 }
 
-async fn rand_setu_friend(event:& FriendMessageEvent, bot: &mut Bot) {
+async fn rand_setu_friend(event: &FriendMessageEvent, bot: &mut Bot) {
     let setu = SetuService::rand_setu().await;
     match setu {
         None => {}
         Some(setu) => {
             let vec = vec![
-                text(format!("Title: {}\n", setu.title.unwrap())),
-                text(format!("pid: {}\n", setu.pid.unwrap())),
-                image(setu.urls.unwrap()),
+                text(format!("Title: {}\n", setu.title.unwrap()).as_str()),
+                text(format!("pid: {}\n", setu.pid.unwrap()).as_str()),
+                image(setu.urls.unwrap().as_str()),
             ];
             let frame = bot.send_private_msg(event.user_id, vec).await;
-            match frame {
-                None => {}
-                Some(frame) => {
-                    info!("[Bot] {} - {}",frame.ok,frame.message_id);
-                }
-            }
+            handle_frame(frame).await;
         }
     }
 }
@@ -91,30 +124,55 @@ async fn get_setu_group(event: &GroupMessageEvent, bot: &mut Bot) {
     let mut bot = bot.clone();
     let lolicon = get_lolicon().await;
     match lolicon {
-        None => {}
+        None => {
+            rand_setu_group(&event, &mut bot).await;
+        }
         Some(setu) => {
             let vec = vec![
-                text(format!("Title: {}\n", setu.title.unwrap())),
-                text(format!("pid: {}\n", setu.pid.unwrap())),
-                image(setu.urls.unwrap()),
+                text(format!("Title: {}\n", setu.title.unwrap()).as_str()),
+                text(format!("pid: {}\n", setu.pid.unwrap()).as_str()),
+                image(setu.urls.unwrap().as_str()),
             ];
             let frame = bot.send_group_msg(event.group_id, vec).await;
-            match frame {
-                None => {}
+            let frame_return = handle_frame_return(frame).await;
+            match frame_return {
+                None => {
+                    let frame = bot.send_group_msg(event.group_id, vec![text("这张色图太😍了,我自己看看就好了~")]).await;
+                    handle_frame(frame).await;
+                }
                 Some(frame) => {
-                    if frame.ok{
-                        info!("[Bot] {} - {}",frame.ok,frame.message_id);
-                        delete_msg(&mut bot, frame.message_id, 60).await;
+                    delete_msg(&mut bot, frame.message_id, 60).await;
+                }
+            }
+        }
+    }
+}
+
+async fn get_setu_group_list(event: &GroupMessageEvent, bot: &mut Bot) {
+    let mut bot = bot.clone();
+    let event = event;
+    let result = Regex::new(r"(?P<last>\d+)(.*)").unwrap();
+    let cow = result.replace(event.raw_message.as_str(), "$last").parse::<i64>().unwrap();
+
+    let lolicon = get_lolicon_list(cow).await;
+    match lolicon {
+        None => {}
+        Some(setu) => {
+            for s in setu {
+                let vec = vec![
+                    text(format!("Title: {}\n", s.title.unwrap()).as_str()),
+                    text(format!("pid: {}\n", s.pid.unwrap()).as_str()),
+                    image(s.urls.unwrap().as_str()),
+                ];
+                let frame = bot.send_group_msg(event.group_id, vec).await;
+                let frame_return = handle_frame_return(frame).await;
+                match frame_return {
+                    None => {
+                        let frame = bot.send_group_msg(event.group_id, vec![text("这张色图太😍了,我自己看看就好了~")]).await;
+                        handle_frame(frame).await;
                     }
-                    let frame = bot.send_group_msg(event.group_id, vec![text("这张色图太😍了,我自己看看就好了~".to_string())]).await;
-                    match frame {
-                        None => {}
-                        Some(frame) => {
-                            if frame.ok{
-                                info!("[Bot] {} - {}",frame.ok,frame.message_id);
-                                delete_msg(&mut bot, frame.message_id, 60).await;
-                            }
-                        }
+                    Some(frame) => {
+                        delete_msg(&mut bot, frame.message_id, 60).await;
                     }
                 }
             }
@@ -122,35 +180,26 @@ async fn get_setu_group(event: &GroupMessageEvent, bot: &mut Bot) {
     }
 }
 
-async fn rand_setu_group(event:& GroupMessageEvent, bot: &mut Bot) {
+async fn rand_setu_group(event: &GroupMessageEvent, bot: &mut Bot) {
     let mut bot = bot.clone();
     let setu = SetuService::rand_setu().await;
     match setu {
         None => {}
         Some(setu) => {
             let vec = vec![
-                text(format!("Title: {}\n", setu.title.unwrap())),
-                text(format!("pid: {}\n", setu.pid.unwrap())),
-                image(setu.urls.unwrap()),
+                text(format!("Title: {}\n", setu.title.unwrap()).as_str()),
+                text(format!("pid: {}\n", setu.pid.unwrap()).as_str()),
+                image(setu.urls.unwrap().as_str()),
             ];
             let frame = bot.send_group_msg(event.group_id, vec).await;
-            match frame {
-                None => {}
+            let frame_return = handle_frame_return(frame).await;
+            match frame_return {
+                None => {
+                    let frame = bot.send_group_msg(event.group_id, vec![text("这张色图太😍了,我自己看看就好了~")]).await;
+                    handle_frame(frame).await;
+                }
                 Some(frame) => {
-                    if frame.ok{
-                        info!("[Bot] {} - {}",frame.ok,frame.message_id);
-                        delete_msg(&mut bot, frame.message_id, 60).await;
-                    }
-                    let frame = bot.send_group_msg(event.group_id, vec![text("这张色图太😍了,我自己看看就好了~".to_string())]).await;
-                    match frame {
-                        None => {}
-                        Some(frame) => {
-                            if frame.ok{
-                                info!("[Bot] {} - {}",frame.ok,frame.message_id);
-                                delete_msg(&mut bot, frame.message_id, 60).await;
-                            }
-                        }
-                    }
+                    delete_msg(&mut bot, frame.message_id, 60).await;
                 }
             }
         }
@@ -160,8 +209,9 @@ async fn rand_setu_group(event:& GroupMessageEvent, bot: &mut Bot) {
 
 async fn delete_msg(bot: &mut Bot, msg_id: i64, time: u64) {
     let mut bot = bot.clone();
-    time::sleep(time::Duration::from_secs(time)).await;
-    let handle = tokio::spawn(async move {
+    thread::spawn( move|| async move {
+        let mut bot = bot.clone();
+        time::sleep(time::Duration::from_secs(time)).await;
         let frame = bot.delete_msg(msg_id).await;
         match frame {
             None => {}
@@ -171,5 +221,4 @@ async fn delete_msg(bot: &mut Bot, msg_id: i64, time: u64) {
             }
         };
     });
-    handle.abort();
 }

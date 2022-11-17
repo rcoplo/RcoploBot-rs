@@ -12,7 +12,7 @@ pub struct Message {
 
 }
 
-pub fn text(text: String) -> Message {
+pub fn text(text: &str) -> Message {
     Message {
         r#type: "text".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -30,7 +30,7 @@ pub fn face(id: i32) -> Message {
     }
 }
 
-pub fn record(file: String) -> Message {
+pub fn record(file: &str) -> Message {
     Message {
         r#type: "record".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -39,7 +39,7 @@ pub fn record(file: String) -> Message {
     }
 }
 
-pub fn video(file: String) -> Message {
+pub fn video(file: &str) -> Message {
     Message {
         r#type: "video".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -66,7 +66,7 @@ pub fn at_all() -> Message {
     }
 }
 
-pub fn at_name(qq: i64, name: String) -> Message {
+pub fn at_name(qq: i64, name: &str) -> Message {
     Message {
         r#type: "at".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -76,7 +76,7 @@ pub fn at_name(qq: i64, name: String) -> Message {
     }
 }
 
-pub fn share(url: String, title: String) -> Message {
+pub fn share(url: &str, title: &str) -> Message {
     Message {
         r#type: "share".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -86,11 +86,11 @@ pub fn share(url: String, title: String) -> Message {
     }
 }
 
-pub fn share_all(url: String, title: String, content: String, image: String) -> Message {
+pub fn share_all(url: &str, title: &str, content: &str, image: &str) -> Message {
     Message {
         r#type: "share".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
-            ("url".to_string(), url.to_string()),
+            ("file".to_string(), url.to_string()),
             ("title".to_string(), title.to_string()),
             ("content".to_string(), content.to_string()),
             ("image".to_string(), image.to_string()),
@@ -98,7 +98,7 @@ pub fn share_all(url: String, title: String, content: String, image: String) -> 
     }
 }
 
-pub fn music(r#type: String, id: i64) -> Message {
+pub fn music(r#type: &str, id: i64) -> Message {
     Message {
         r#type: "music".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -108,7 +108,7 @@ pub fn music(r#type: String, id: i64) -> Message {
     }
 }
 
-pub fn music_all(r#type: String, url: String, audio: String, title: String, content: String, image: String) -> Message {
+pub fn music_all(r#type: &str, url: &str, audio: &str, title: &str, content: &str, image: &str) -> Message {
     Message {
         r#type: "music".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -122,7 +122,7 @@ pub fn music_all(r#type: String, url: String, audio: String, title: String, cont
     }
 }
 
-pub fn image(url: String) -> Message {
+pub fn image(url: &str) -> Message {
     Message {
         r#type: "image".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -140,7 +140,7 @@ pub fn reply(message_id: i64) -> Message {
     }
 }
 
-pub fn reply_text(qq: i64, text: String) -> Message {
+pub fn reply_text(qq: i64, text: &str) -> Message {
     Message {
         r#type: "reply".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -150,7 +150,7 @@ pub fn reply_text(qq: i64, text: String) -> Message {
     }
 }
 
-pub fn redbag(title: String) -> Message {
+pub fn redbag(title: &str) -> Message {
     Message {
         r#type: "redbag".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -178,7 +178,7 @@ pub fn gift(qq: i64, id: i32) -> Message {
     }
 }
 
-pub fn forward_ref(id: String) -> Message {
+pub fn forward_ref(id: &str) -> Message {
     Message {
         r#type: "forward".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -187,7 +187,7 @@ pub fn forward_ref(id: String) -> Message {
     }
 }
 
-pub fn forward_node(name: String, uin: i64, content: Vec<Message>) -> Message {
+pub fn forward_node(name: &str, uin: i64, content: Vec<Message>) -> Message {
     Message {
         r#type: "node".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -208,7 +208,7 @@ pub fn node_ref(message_id: i32) -> Message {
 }
 
 
-pub fn xml(data: String) -> Message {
+pub fn xml(data: &str) -> Message {
     Message {
         r#type: "xml".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -217,7 +217,7 @@ pub fn xml(data: String) -> Message {
     }
 }
 
-pub fn xml_all(data: String, resid: i32) -> Message {
+pub fn xml_all(data: &str, resid: i32) -> Message {
     Message {
         r#type: "xml".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -228,7 +228,7 @@ pub fn xml_all(data: String, resid: i32) -> Message {
 }
 
 
-pub fn json(data: String) -> Message {
+pub fn json(data: &str) -> Message {
     let data = data
         .replace(",", "&#44;")
         .replace("&", "&amp;")
@@ -242,7 +242,7 @@ pub fn json(data: String) -> Message {
     }
 }
 
-pub fn json_all(data: String, resid: i32) -> Message {
+pub fn json_all(data: &str, resid: i32) -> Message {
     let data = data
         .replace(",", "&#44;")
         .replace("&", "&amp;")
@@ -257,7 +257,7 @@ pub fn json_all(data: String, resid: i32) -> Message {
     }
 }
 
-pub fn cardimage(file: String) -> Message {
+pub fn cardimage(file: &str) -> Message {
     Message {
         r#type: "cardimage".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -266,7 +266,7 @@ pub fn cardimage(file: String) -> Message {
     }
 }
 
-pub fn cardimage_all(file: String, minwidth: i32, minheight: i32, maxwidth: i32, maxheight: i32, source: String, icon: String) -> Message {
+pub fn cardimage_all(file: &str, minwidth: i32, minheight: i32, maxwidth: i32, maxheight: i32, source: &str, icon: &str) -> Message {
     Message {
         r#type: "cardimage".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -281,7 +281,7 @@ pub fn cardimage_all(file: String, minwidth: i32, minheight: i32, maxwidth: i32,
     }
 }
 
-pub fn tts(text: String) -> Message {
+pub fn tts(text: &str) -> Message {
     Message {
         r#type: "tts".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
