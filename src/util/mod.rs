@@ -1,4 +1,8 @@
 pub mod regex_utils;
-pub mod image_osu;
+mod image_osu;
 pub mod file;
+mod image_utils;
+mod http_utils;
+
 pub use image_osu::*;
+pub use image_utils::*;

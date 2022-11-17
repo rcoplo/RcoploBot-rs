@@ -6,6 +6,8 @@ use crate::config::ApplicationConfig;
 use crate::config::BotConfig;
 
 mod setu_service;
+mod friend_function_service;
+mod group_function_service;
 
 pub use setu_service::*;
 

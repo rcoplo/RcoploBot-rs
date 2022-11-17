@@ -8,9 +8,36 @@ use crate::service::{ SetuService};
 
 pub async fn event_handle(event:Event, bot:&mut Bot) {
     let mut bot = bot.clone();
+
+    match &event {
+        Event::FriendMessageEvent(event) => {
+            info!("Q::{} >{}",&event.user_id,&event.raw_message);
+        }
+        Event::GroupMessageEvent(event) => {
+            info!("G::{} >Q::{} >{}",&event.group_id,&event.user_id,&event.raw_message);
+        }
+        Event::GroupFileUpload(_) => {}
+        Event::GroupAdminChange(_) => {}
+        Event::GroupMemberDecrease(_) => {}
+        Event::GroupMemberIncrease(_) => {}
+        Event::GroupBan(_) => {}
+        Event::FriendAdd(_) => {}
+        Event::GroupMessageRecall(_) => {}
+        Event::FriendMessageRecall(_) => {}
+        Event::FriendPoke(_) => {}
+        Event::GroupPoke(_) => {}
+        Event::TipsForLuckyKingOfRedPackets(_) => {}
+        Event::GroupMemberHonorChangePrompt(_) => {}
+        Event::GroupMemberBusinessCardUpdate(_) => {}
+        Event::OfflineFileReceived(_) => {}
+        Event::AddFriendRequest(_) => {}
+        Event::AddGroupRequest(_) => {}
+        Event::OtherClientOnlineStatusChanges(_) => {}
+        Event::ApiResult(_) => {}
+    }
+
     setu_module_handle(&event, &mut bot).await;
     group_recreational_module_handle(&event, &mut bot).await;
-
 
 }
 
@@ -24,14 +51,14 @@ pub async fn get_group_avatar(group_id:i64) -> String {
 }
 
 pub async fn meow_err(msg:&str) -> String{
-    format!("{}喵...",msg)
+    format!("{} 喵...",msg)
 }
 
 pub async fn meow_ok(msg:&str) -> String{
-    format!("{}喵!",msg)
+    format!("{} 喵!",msg)
 }
 pub async fn meow_warn(msg:&str) -> String{
-    format!("{}喵?",msg)
+    format!("{} 喵?",msg)
 }
 pub async fn meow_log(msg:&str,r#type:i8){
     match r#type {

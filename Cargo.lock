@@ -20,6 +20,7 @@ dependencies = [
  "rbs",
  "regex",
  "reqwest",
+ "rusttype",
  "serde",
  "serde_json",
  "serde_yaml",

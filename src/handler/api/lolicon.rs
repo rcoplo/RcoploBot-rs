@@ -75,6 +75,24 @@ pub async fn get_lolicon_list(num:i64)-> Option<Vec<Setu>>{
         }
     }
 }
+pub async fn get_lolicon_list_tag(num:i64,tag:Vec<String>)-> Option<Vec<Setu>>{
+    let value = Value::from(tag);
+    let json =  json!(
+       {
+            "r18": 0,
+            "num": num,
+            "tag": value,
+        }
+    );
+
+    let data = get(URL, json).await;
+    match data {
+        None => None,
+        Some(data) => {
+            Some(to_setu_list(data).await)
+        }
+    }
+}
 
 pub async fn get_lolicon_r18_tag(tag:Vec<String>)-> Option<Setu>{
     let value = Value::from(tag);
@@ -130,7 +148,6 @@ pub async fn get_lolicon_tag(tag:Vec<String>)-> Option<Setu>{
             "tag": value,
         }
     );
-
     let data = get(URL, json).await;
     match data {
         None => None,

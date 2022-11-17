@@ -18,23 +18,6 @@ pub async fn group_recreational_module_handle(event:&Event,bot:&mut Bot){
         Event::GroupMessageEvent(event) => {
             group_handle(&event, &mut bot).await
         }
-        Event::GroupFileUpload(_) => {}
-        Event::GroupAdminChange(_) => {}
-        Event::GroupMemberDecrease(_) => {}
-        Event::GroupMemberIncrease(_) => {}
-        Event::GroupBan(_) => {}
-        Event::FriendAdd(_) => {}
-        Event::GroupMessageRecall(_) => {}
-        Event::FriendMessageRecall(_) => {}
-        Event::FriendPoke(_) => {}
-        Event::GroupPoke(_) => {}
-        Event::TipsForLuckyKingOfRedPackets(_) => {}
-        Event::GroupMemberHonorChangePrompt(_) => {}
-        Event::GroupMemberBusinessCardUpdate(_) => {}
-        Event::OfflineFileReceived(_) => {}
-        Event::AddFriendRequest(_) => {}
-        Event::AddGroupRequest(_) => {}
-        Event::OtherClientOnlineStatusChanges(_) => {}
         _ => {}
     }
 

@@ -1,4 +1,34 @@
 debug: false
-database_url: "mysql://{root}:{password}@{host}:{port}/{database}"
+database_url: "mysql://rcoplobot:cjEDS7FE5RKbz6rZ@rm-uf63h213beeade8093o.mysql.rds.aliyuncs.com:10033/rcoplobot"
 
+bili_cookie:
+  SESSDATA: ""
+  bili_jct: ""
 
+#色图配置
+setu:
+  # is_local_storage: 是否保存本地
+  # withdraw_time: 色图撤回时间
+  local_storage: false
+  withdraw_time: 30
+api:
+  #高德地图api
+  #和风天气api
+  amap_api_key: ""
+  qweather_api_key: ""
+#搜图api
+search_image:
+  #获取数量
+  max_find_image_count: 5
+  #api
+  saucenao_api_key: ""
+#osuApi
+osu_api_v2:
+  client_id: 15984
+  client_secret: ""
+osu_api_v1:
+  api_key: ""
+sign_in:
+  # 签到
+  # sign_scope: 签到好感度增加范围
+  sign_scope: 10

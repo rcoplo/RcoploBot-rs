@@ -3,7 +3,11 @@ use regex::{Regex, RegexSet};
 
 
 pub fn contain(sources: &String, value: Vec<&str>) -> bool {
-    let set = RegexSet::new(&value).unwrap();
+    let mut vec1 = vec![];
+    for msg in value {
+        vec1.push(format!("^{}$",msg));
+    }
+    let set = RegexSet::new(&vec1).unwrap();
     set.is_match(sources.as_str())
 }
 
