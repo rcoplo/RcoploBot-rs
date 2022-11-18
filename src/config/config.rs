@@ -50,7 +50,7 @@ pub struct OsuApiV1Config {
 
 #[derive(Debug, PartialEq, serde::Serialize, serde::Deserialize, Clone)]
 pub struct SignInConfig {
-    pub sign_scope: i32,
+    pub sign_scope: f64,
 }
 
 impl Default for ApplicationConfig {

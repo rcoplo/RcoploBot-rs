@@ -167,11 +167,11 @@ pub struct Setu {
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct SignGroupUsers {
     pub id:i32,
-    pub user_qq: Option<i64>,
+    pub user_id: Option<i64>,
     pub group_id: Option<i64>,
     pub checkin_count: Option<i32>,
     pub checkin_count_last: Option<FastDateTime>,
-    pub impression: Option<bool>,
+    pub impression: Option<f64>,
     pub impression_grade: Option<i32>,
 }
 

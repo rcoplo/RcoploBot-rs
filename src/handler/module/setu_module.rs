@@ -13,7 +13,8 @@ use crate::core::message::*;
 use crate::domain::Setu;
 use crate::handler::api::{get_lolicon, get_lolicon_list, get_lolicon_list_tag, get_lolicon_tag};
 use crate::handler::{handle_frame, handle_frame_return, meow_log};
-use crate::service::{CONTEXT, SetuService};
+use crate::handler::bot_help::{BotHelp, Help};
+use crate::service::{CONTEXT, GroupFunctionService, SetuService};
 use crate::util::regex_utils::{contain, replace_regex};
 
 
@@ -29,7 +30,26 @@ pub async fn setu_module_handle(event: &Event, bot: &mut Bot) {
         _ => {}
     }
 }
-
+pub struct SetuHelp;
+impl BotHelp for SetuHelp {
+    fn new() -> Help {
+        Help{
+            module_name: "色图".to_string(),
+            module_name_abbreviation:"setu".to_string(),
+            module_default:false,
+            module_help: vec![
+                "指令: /色图".to_string(),
+                "参数: [tag]|[tag]".to_string(),
+                "------------------------".to_string(),
+                "指令: [num]张色图".to_string(),
+                "参数: [num]指1~20的数字".to_string(),
+                "     [tag]|[tag]".to_string(),
+                "     [tag]中间以英文 `|` 号间隔".to_string(),
+                "参数和指令中间需有空格".to_string(),
+            ]
+        }
+    }
+}
 pub async fn friend_handle(event: &FriendMessageEvent, bot: &mut Bot) {
     let mut bot = bot.clone();
     if contain(&event.raw_message, vec!["/色图", "/瑟图"]) {
@@ -51,25 +71,29 @@ pub async fn friend_handle(event: &FriendMessageEvent, bot: &mut Bot) {
 }
 
 pub async fn group_handle(event: &GroupMessageEvent, bot: &mut Bot) {
-    let mut bot = bot.clone();
-    if contain(&event.raw_message, vec!["/色图", "/瑟图"]) {
-        meow_log("setu_group", 0).await;
-        setu_group(&event, &mut bot).await;
-    }else if contain(&event.raw_message, vec!["/色图[\\s+](.*)", "/瑟图[\\s+](.*)"]) {
-        meow_log("setu_group_tag", 0).await;
-        setu_group_tag(&event, &mut bot).await;
-    }else if contain(&event.raw_message, vec!["/rand 色图", "/rand 瑟图"]) {
-        meow_log("rand_setu_group", 0).await;
-        // rand_setu_group(&event, &mut bot).await;
-    }else if contain(&event.raw_message, vec![r"(\d)张色图"]) {
-        meow_log("setu_group_list", 0).await;
-        setu_group_list(&event, &mut bot).await;
+    let open = GroupFunctionService::select_function_is_open(&event.group_id, "setu").await;
+    if open {
+        let mut bot = bot.clone();
+        if contain(&event.raw_message, vec!["/色图", "/瑟图"]) {
+            meow_log("setu_group", 0).await;
+            setu_group(&event, &mut bot).await;
+        }else if contain(&event.raw_message, vec!["/色图[\\s+](.*)", "/瑟图[\\s+](.*)"]) {
+            meow_log("setu_group_tag", 0).await;
+            setu_group_tag(&event, &mut bot).await;
+        }else if contain(&event.raw_message, vec!["/rand 色图", "/rand 瑟图"]) {
+            meow_log("rand_setu_group", 0).await;
+            // rand_setu_group(&event, &mut bot).await;
+        }else if contain(&event.raw_message, vec![r"(\d)张色图"]) {
+            meow_log("setu_group_list", 0).await;
+            setu_group_list(&event, &mut bot).await;
 
-    }else if contain(&event.raw_message, vec!["(\\d)张色图[\\s+](.*)"]) {
-        meow_log("setu_group_list_tag", 0).await;
-        setu_group_list_tag(&event, &mut bot).await;
+        }else if contain(&event.raw_message, vec!["(\\d)张色图[\\s+](.*)"]) {
+            meow_log("setu_group_list_tag", 0).await;
+            setu_group_list_tag(&event, &mut bot).await;
 
-    };
+        };
+    }
+
 }
 
 async fn setu_friend(event: &FriendMessageEvent, bot: &mut Bot) {

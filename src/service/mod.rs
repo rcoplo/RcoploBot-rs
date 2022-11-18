@@ -8,8 +8,12 @@ use crate::config::BotConfig;
 mod setu_service;
 mod friend_function_service;
 mod group_function_service;
+mod sign_group_users_service;
 
 pub use setu_service::*;
+pub use group_function_service::*;
+pub use friend_function_service::*;
+pub use sign_group_users_service::*;
 
 /// CONTEXT is all of the service struct
 pub static CONTEXT: Lazy<ServiceContext> = Lazy::new(|| ServiceContext::default());

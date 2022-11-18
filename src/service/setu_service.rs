@@ -26,7 +26,7 @@ impl SetuService {
         }
     }
      async fn query_setu_list() -> Option<usize> {
-         let list = Setu::select_all(pool!()).await.unwrap();
+         let list = Setu::select_by_column(pool!(),"id",["id"]).await.unwrap();
          Some(list.len())
     }
 

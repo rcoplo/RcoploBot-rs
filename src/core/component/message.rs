@@ -48,7 +48,7 @@ pub fn video(file: &str) -> Message {
     }
 }
 
-pub fn at(qq: i64) -> Message {
+pub fn at(qq: &i64) -> Message {
     Message {
         r#type: "at".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -66,7 +66,7 @@ pub fn at_all() -> Message {
     }
 }
 
-pub fn at_name(qq: i64, name: &str) -> Message {
+pub fn at_name(qq: &i64, name: &str) -> Message {
     Message {
         r#type: "at".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -98,7 +98,7 @@ pub fn share_all(url: &str, title: &str, content: &str, image: &str) -> Message 
     }
 }
 
-pub fn music(r#type: &str, id: i64) -> Message {
+pub fn music(r#type: &str, id: &i64) -> Message {
     Message {
         r#type: "music".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -131,7 +131,7 @@ pub fn image(url: &str) -> Message {
     }
 }
 
-pub fn reply(message_id: i64) -> Message {
+pub fn reply(message_id: &i64) -> Message {
     Message {
         r#type: "reply".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -140,7 +140,7 @@ pub fn reply(message_id: i64) -> Message {
     }
 }
 
-pub fn reply_text(qq: i64, text: &str) -> Message {
+pub fn reply_text(qq: &i64, text: &str) -> Message {
     Message {
         r#type: "reply".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -159,7 +159,7 @@ pub fn redbag(title: &str) -> Message {
     }
 }
 
-pub fn poke(qq: i64) -> Message {
+pub fn poke(qq: &i64) -> Message {
     Message {
         r#type: "poke".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -168,7 +168,7 @@ pub fn poke(qq: i64) -> Message {
     }
 }
 
-pub fn gift(qq: i64, id: i32) -> Message {
+pub fn gift(qq: &i64, id: i32) -> Message {
     Message {
         r#type: "gift".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
@@ -187,7 +187,7 @@ pub fn forward_ref(id: &str) -> Message {
     }
 }
 
-pub fn forward_node(name: &str, uin: i64, content: Vec<Message>) -> Message {
+pub fn forward_node(name: &str, uin: &i64, content: Vec<Message>) -> Message {
     Message {
         r#type: "node".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([

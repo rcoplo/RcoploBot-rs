@@ -3,8 +3,8 @@ use log::{error, info, warn};
 use crate::core::bot::{Bot, Frame};
 use crate::core::event::*;
 use crate::domain::Setu;
-use crate::handler::{group_recreational_module_handle, setu_module_handle};
-use crate::service::{ SetuService};
+use crate::handler::{group_function_handle, group_recreational_module_handle, setu_module_handle, sign_module_handle};
+use crate::service::{CONTEXT, SetuService};
 
 pub async fn event_handle(event:Event, bot:&mut Bot) {
     let mut bot = bot.clone();
@@ -15,6 +15,9 @@ pub async fn event_handle(event:Event, bot:&mut Bot) {
         }
         Event::GroupMessageEvent(event) => {
             info!("G::{} >Q::{} >{}",&event.group_id,&event.user_id,&event.raw_message);
+            group_function_handle(&event, &mut bot).await;
+            sign_module_handle(&event, &mut bot).await;
+
         }
         Event::GroupFileUpload(_) => {}
         Event::GroupAdminChange(_) => {}
@@ -38,6 +41,7 @@ pub async fn event_handle(event:Event, bot:&mut Bot) {
 
     setu_module_handle(&event, &mut bot).await;
     group_recreational_module_handle(&event, &mut bot).await;
+
 
 }
 
@@ -98,3 +102,18 @@ pub async fn handle_frame_return(frame:Option<Frame>) -> Option<Frame>{
     frame
 }
 
+pub fn bot_name_compound(num:i8,msg:&str) -> String{
+    let name = CONTEXT.bot_config.bot_name.as_ref().unwrap();
+    let id = CONTEXT.bot_config.bot_id.as_ref().unwrap();
+    match num {
+        0 => {
+            format!("{}{}",name,msg)
+        }
+        1 => {
+            format!("{}{}",msg,name)
+        }
+        _ => {format!("")}
+
+    }
+
+}

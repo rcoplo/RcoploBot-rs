@@ -30,7 +30,7 @@ pub async fn group_handle(event:& GroupMessageEvent, bot: &mut Bot) {
         supermarket_group_member(&event, &mut bot).await;
     };
     if contain(&event.raw_message, vec!["日群主"]) {
-        let frame = bot.send_group_msg(event.group_id, vec![at(event.user_id), text("绒布球不乖了噢")]).await;
+        let frame = bot.send_group_msg(event.group_id, vec![at(&event.user_id), text("绒布球不乖了噢")]).await;
         handle_frame(frame).await;
     };
 }
@@ -48,7 +48,7 @@ async fn supermarket_group_member(event:&GroupMessageEvent, bot: &mut Bot){
             let cp_2 = json["cp_2"].as_i64().unwrap();
             let stranger = bot.get_stranger_info(cp_2).await.unwrap();
             let msg = vec![
-                at(event.user_id.clone()),
+                at(&event.user_id),
                 text(format!(" 你今天的cp是{}\n", stranger.nickname).as_str()),
                 image(get_user_avatar(stranger.user_id).await.as_str()),
             ];
