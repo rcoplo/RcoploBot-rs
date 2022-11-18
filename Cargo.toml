@@ -38,3 +38,8 @@ rusttype = "0.9.3"
 
 [target.x86_64-pc-windows-msvc]
 rustflags = ["-C", "target-feature=+crt-static"]
+
+[profile.release]
+lto = true
+opt-level = 3
+codegen-units = 1
