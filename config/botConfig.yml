@@ -1,7 +1,7 @@
 type: "ws"
-url: "ws://192.168.5.248:6701"
+url: "ws://192.168.5.1:6700"
 access_token: "345ily6v2lhhv3d4"
 super_administrator:
   - 2939599299
 bot_name: "小白"
-bot_id: 1542640537
+bot_id: 3199095616

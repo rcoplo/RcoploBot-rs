@@ -1,15 +1,9 @@
 use crate::core::bot::Bot;
 use crate::core::event::Event;
+use crate::core::group::Group;
+use crate::service::GroupFunctionService;
 
-pub async fn sign_module_handle(event: &Event, bot: &mut Bot) {
-    let mut bot = bot.clone();
-    match event {
-        Event::FriendMessageEvent(event) => {
+pub async fn ai_group_module_handle(group:&mut Group) {
+    let mut group = group.clone();
 
-        }
-        Event::GroupMessageEvent(event) => {
-
-        }
-        _ => {}
-    }
 }

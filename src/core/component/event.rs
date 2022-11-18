@@ -56,7 +56,7 @@ pub enum MetaEventType {
     Heartbeat,
 }
 
-#[derive(Serialize, Deserialize,Debug)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub enum Event{
     FriendMessageEvent(FriendMessageEvent),
     GroupMessageEvent(GroupMessageEvent),
@@ -182,7 +182,7 @@ impl Event{
 
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct FriendSender{
     pub age: i32,
     pub nickname: String,
@@ -190,7 +190,7 @@ pub struct FriendSender{
     pub user_id: i64,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct GroupSender{
     pub age: i32,
     pub area: String,
@@ -202,13 +202,13 @@ pub struct GroupSender{
     pub title: String,
     pub user_id: i64,
 }
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct Message<M>{
     pub r#type: String,
     pub data: M,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct FriendMessageEvent {
     pub post_type:String,
     pub message_type:String,
@@ -226,7 +226,7 @@ pub struct FriendMessageEvent {
     pub temp_source:i32,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct GroupMessageEvent{
     pub post_type:String,
     pub message_type:String,
@@ -244,7 +244,7 @@ pub struct GroupMessageEvent{
     pub message_id:i64,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct GroupFileUpload {
     pub time:i64,
     pub self_id:i64,
@@ -256,7 +256,7 @@ pub struct GroupFileUpload {
 
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct FileInfo{
     pub id:String,
     pub name:String,
@@ -264,7 +264,7 @@ pub struct FileInfo{
     pub busid:i64,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct GroupAdminChange {
     pub time:i64,
     pub self_id:i64,
@@ -275,7 +275,7 @@ pub struct GroupAdminChange {
     pub user_id:i64,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct GroupMemberDecrease {
     pub time:i64,
     pub self_id:i64,
@@ -287,7 +287,7 @@ pub struct GroupMemberDecrease {
     pub user_id:i64,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct GroupMemberIncrease {
     pub time:i64,
     pub self_id:i64,
@@ -298,7 +298,7 @@ pub struct GroupMemberIncrease {
     pub operator_id:i64,
     pub user_id:i64,
 }
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct GroupBan {
     pub time:i64,
     pub self_id:i64,
@@ -310,7 +310,7 @@ pub struct GroupBan {
     pub user_id:i64,
     pub duration:i64,
 }
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct FriendAdd {
     pub time:i64,
     pub self_id:i64,
@@ -319,7 +319,7 @@ pub struct FriendAdd {
     pub user_id:i64,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct GroupMessageRecall {
     pub time:i64,
     pub self_id:i64,
@@ -331,7 +331,7 @@ pub struct GroupMessageRecall {
     pub message_id:i64,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct FriendMessageRecall {
     pub time:i64,
     pub self_id:i64,
@@ -340,7 +340,7 @@ pub struct FriendMessageRecall {
     pub user_id:i64,
     pub message_id:i64,
 }
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct FriendPoke {
     pub time:i64,
     pub self_id:i64,
@@ -351,7 +351,7 @@ pub struct FriendPoke {
     pub user_id:i64,
     pub target_id:i64,
 }
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct GroupPoke {
     pub time:i64,
     pub self_id:i64,
@@ -363,7 +363,7 @@ pub struct GroupPoke {
     pub target_id:i64,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct TipsForLuckyKingOfRedPackets {
     pub time:i64,
     pub self_id:i64,
@@ -375,7 +375,7 @@ pub struct TipsForLuckyKingOfRedPackets {
     pub target_id:i64,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct GroupMemberHonorChangePrompt {
     pub time:i64,
     pub self_id:i64,
@@ -387,7 +387,7 @@ pub struct GroupMemberHonorChangePrompt {
     pub honor_type:String,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct GroupMemberBusinessCardUpdate {
     pub time:i64,
     pub self_id:i64,
@@ -398,7 +398,7 @@ pub struct GroupMemberBusinessCardUpdate {
     pub card_new:String,
     pub card_old:String,
 }
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct OfflineFileReceived {
     pub time:i64,
     pub self_id:i64,
@@ -408,14 +408,14 @@ pub struct OfflineFileReceived {
     pub file:OfflineFileInfo,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct OfflineFileInfo {
     pub name:String,
     pub size:i64,
     pub url:String,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct AddFriendRequest {
     pub time:i64,
     pub self_id:i64,
@@ -426,7 +426,7 @@ pub struct AddFriendRequest {
     pub flag:String,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct AddGroupRequest {
     pub time:i64,
     pub self_id:i64,
@@ -438,7 +438,7 @@ pub struct AddGroupRequest {
     pub flag:String,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct OtherClientOnlineStatusChanges {
     pub post_type:String,
     pub notice_type:String,
@@ -446,14 +446,14 @@ pub struct OtherClientOnlineStatusChanges {
     pub online:bool,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct Device {
     pub app_id:i64,
     pub device_name:String,
     pub device_kind:String,
 }
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct EssenceMessage {
     pub time:i64,
     pub self_id:i64,

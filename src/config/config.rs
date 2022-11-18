@@ -22,7 +22,7 @@ pub struct BiliCookieConfig {
 #[derive(Debug, PartialEq, serde::Serialize, serde::Deserialize, Clone)]
 pub struct SetuConfig {
     pub local_storage: bool,
-    pub withdraw_time: i32,
+    pub withdraw_time: u64,
 }
 
 #[derive(Debug, PartialEq, serde::Serialize, serde::Deserialize, Clone)]
