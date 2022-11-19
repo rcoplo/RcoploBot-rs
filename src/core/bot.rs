@@ -16,17 +16,16 @@ use crate::core::component::message::Message;
 pub struct Bot {
     pub bot_id: i64,
     pub bot_name: String,
-    pub api_sender: mpsc::Sender<Frame>,
-    pub resp_promises: Arc<Mutex<HashMap<String, oneshot::Sender<Frame>>>>,
+    pub api_sender: mpsc::Sender<ResultFrame>,
+    pub resp_promises: Arc<Mutex<HashMap<String, oneshot::Sender<ResultFrame>>>>,
 }
 
 #[derive(Debug,Clone)]
-pub struct Frame {
+pub struct ResultFrame {
     pub bot_id: i64,
     pub echo: String,
     pub ok: bool,
     pub data: Option<Value>,
-
     pub message_id: i64,
 }
 
@@ -36,7 +35,7 @@ fn base_api_to_json<P: Serialize>(base_api: BaseApi<P>) -> Value {
 }
 
 impl Bot {
-    pub async fn send_and_wait<P: Serialize>(&mut self, api: BaseApi<P>) -> Option<Frame> {
+    pub async fn send_and_wait<P: Serialize>(&mut self, api: BaseApi<P>) -> Option<ResultFrame> {
         let echo: String = uuid::Uuid::new_v4().to_string();
         let api = api;
         let data = BaseApi {
@@ -44,7 +43,7 @@ impl Bot {
             ..api
         };
         let data = base_api_to_json(data);
-        let frame = Frame {
+        let frame = ResultFrame {
             bot_id: self.bot_id,
             echo: echo.clone(),
             ok: true,
@@ -56,7 +55,7 @@ impl Bot {
         api_sender.send(frame).await;
 
         // 等待API响应
-        let (mut resp_sender, mut resp_receiver) = oneshot::channel();
+        let (resp_sender, mut resp_receiver) = oneshot::channel();
         self.resp_promises.lock().await.insert(echo.clone(), resp_sender);
         let api_resp_frame = resp_receiver.await.unwrap();
         Some(api_resp_frame)
@@ -67,7 +66,7 @@ impl Bot {
         &mut self,
         user_id: i64,
         message: Vec<Message>,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SendPrivateMsg {
             user_id,
             message,
@@ -82,7 +81,7 @@ impl Bot {
         }
     }
 
-    pub async fn send_private_msg_cq(&mut self, user_id: i64, message: String) -> Option<Frame> {
+    pub async fn send_private_msg_cq(&mut self, user_id: i64, message: String) -> Option<ResultFrame> {
         let re = SendPrivateMsgCq {
             user_id,
             message: message.to_string(),
@@ -97,7 +96,7 @@ impl Bot {
         }
     }
 
-    pub async fn send_group_msg(&mut self, group_id: i64, message: Vec<Message>, ) -> Option<Frame> {
+    pub async fn send_group_msg(&mut self, group_id: i64, message: Vec<Message>, ) -> Option<ResultFrame> {
         let re = SendGroupMsg {
             group_id,
             message,
@@ -111,7 +110,7 @@ impl Bot {
             None
         }
     }
-    pub async fn send_group_msg_cq(&mut self, group_id: i64, message: String) -> Option<Frame> {
+    pub async fn send_group_msg_cq(&mut self, group_id: i64, message: String) -> Option<ResultFrame> {
         let re = SendGroupMsgCq {
             group_id,
             message: message.to_string(),
@@ -125,7 +124,7 @@ impl Bot {
             None
         }
     }
-    pub async fn send_group_forward_msg(&mut self, group_id: i64, message: Vec<Message>) -> Option<Frame> {
+    pub async fn send_group_forward_msg(&mut self, group_id: i64, message: Vec<Message>) -> Option<ResultFrame> {
         let re = SendGroupForwardMsg {
             group_id,
             message,
@@ -138,7 +137,7 @@ impl Bot {
             None
         }
     }
-    pub async fn send_msg(&mut self, message_type: &str, group_id: i64, user_id: i64, message: Message) -> Option<Frame> {
+    pub async fn send_msg(&mut self, message_type: &str, group_id: i64, user_id: i64, message: Message) -> Option<ResultFrame> {
         let re = SendMsg {
             message_type: message_type.to_string(),
             group_id,
@@ -155,7 +154,7 @@ impl Bot {
         }
     }
 
-    pub async fn delete_msg(&mut self, message_id: i64) -> Option<Frame> {
+    pub async fn delete_msg(&mut self, message_id: i64) -> Option<ResultFrame> {
         let re = DeleteMsg {
             message_id,
         };
@@ -216,7 +215,7 @@ impl Bot {
         }
     }
 
-    pub async fn can_send_image(&mut self) -> Option<Frame> {
+    pub async fn can_send_image(&mut self) -> Option<ResultFrame> {
         let api = CanSendImage.can_send_image().await.unwrap();
         let resp = self.send_and_wait(api).await;
         if let Some(frame) = resp {
@@ -225,7 +224,7 @@ impl Bot {
             None
         }
     }
-    pub async fn mark_msg_as_read(&mut self, message_id: i64) -> Option<Frame> {
+    pub async fn mark_msg_as_read(&mut self, message_id: i64) -> Option<ResultFrame> {
         let re = MarkMsgAsRead {
             message_id,
         };
@@ -242,7 +241,7 @@ impl Bot {
         group_id: i64,
         user_id: i64,
         reject_add_request: bool,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SetGroupKick {
             group_id,
             user_id,
@@ -261,7 +260,7 @@ impl Bot {
         group_id: i64,
         user_id: i64,
         duration: Value,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SetGroupBan {
             group_id,
             user_id,
@@ -280,7 +279,7 @@ impl Bot {
         group_id: i64,
         flag: &str,
         duration: Value,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SetGroupAnonymousBan {
             group_id,
             flag: flag.to_string(),
@@ -298,7 +297,7 @@ impl Bot {
         &mut self,
         group_id: i64,
         enable: bool,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SetGroupWholeBan {
             group_id,
             enable,
@@ -316,7 +315,7 @@ impl Bot {
         group_id: i64,
         user_id: i64,
         enable: bool,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SetGroupAdmin {
             group_id,
             user_id,
@@ -335,7 +334,7 @@ impl Bot {
         group_id: i64,
         user_id: i64,
         card: &str,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SetGroupCard {
             group_id,
             user_id,
@@ -353,7 +352,7 @@ impl Bot {
         &mut self,
         group_id: i64,
         group_name: &str,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SetGroupName {
             group_id,
             group_name: group_name.to_string(),
@@ -370,7 +369,7 @@ impl Bot {
         &mut self,
         group_id: i64,
         is_dismiss: bool,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SetGroupLeave {
             group_id,
             is_dismiss,
@@ -389,7 +388,7 @@ impl Bot {
         user_id: i64,
         special_title: bool,
         duration: Value,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SetGroupSpecialTitle {
             group_id,
             user_id,
@@ -407,7 +406,7 @@ impl Bot {
     pub async fn send_group_sign(
         &mut self,
         group_id: i64,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SendGroupSign {
             group_id,
         };
@@ -424,7 +423,7 @@ impl Bot {
         flag: &str,
         approve: bool,
         remark: &str,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SetFriendAddRequest {
             flag: flag.to_string(),
             approve,
@@ -444,7 +443,7 @@ impl Bot {
         sub_type: &str,
         approve: bool,
         reason: &str,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SetGroupAddRequest {
             flag: flag.to_string(),
             sub_type: sub_type.to_string(),
@@ -481,7 +480,7 @@ impl Bot {
         email: &str,
         college: &str,
         personal_note: &str,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SetQqProfile {
             nickname: nickname.to_string(),
             company: company.to_string(),
@@ -550,7 +549,7 @@ impl Bot {
     pub async fn delete_friend(
         &mut self,
         friend_id: i64,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = DeleteFriend {
             friend_id,
         };
@@ -662,7 +661,7 @@ impl Bot {
     }
     pub async fn can_send_record(
         &mut self,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let api = CanSendRecord.can_send_record().await.unwrap();
         let resp = self.send_and_wait(api).await;
         if let Some(frame) = resp {
@@ -689,7 +688,7 @@ impl Bot {
     pub async fn set_restart(
         &mut self,
         delay: Value,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SetRestart {
             delay,
         };
@@ -706,7 +705,7 @@ impl Bot {
         group_id: i64,
         file: &str,
         cache: i32,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SetGroupPortrait {
             group_id,
             file: file.to_string(),
@@ -742,7 +741,7 @@ impl Bot {
     pub async fn ocr_image(
         &mut self,
         image: &str,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = OcrImage {
             image: image.to_string(),
         };
@@ -774,7 +773,7 @@ impl Bot {
         user_id: i64,
         file: &str,
         name: &str,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = UploadPrivateFile {
             user_id,
             file: file.to_string(),
@@ -794,7 +793,7 @@ impl Bot {
         file: &str,
         name: &str,
         headers: Vec<String>,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let file = self.download_file(file, headers).await;
         let url = match file {
             None => "".to_string(),
@@ -822,7 +821,7 @@ impl Bot {
         user_id: i64,
         file: &str,
         name: &str,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let file = self.download_file(file, vec![]).await;
         let url = match file {
             None => "".to_string(),
@@ -851,7 +850,7 @@ impl Bot {
         file: &str,
         name: &str,
         folder: &str,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = UploadGroupFile {
             group_id,
             file: file.to_string(),
@@ -873,7 +872,7 @@ impl Bot {
         name: &str,
         folder: &str,
         headers: Vec<String>,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let file = self.download_file(file, headers).await;
         let url = match file {
             None => "".to_string(),
@@ -903,7 +902,7 @@ impl Bot {
         file: &str,
         name: &str,
         folder: &str,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let file = self.download_file(file, vec![]).await;
         let url = match file {
             None => "".to_string(),
@@ -932,7 +931,7 @@ impl Bot {
         &mut self,
         url: &str,
         headers: Vec<String>,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = DownloadFile {
             url: url.to_string(),
             thread_count: 8,
@@ -1010,7 +1009,7 @@ impl Bot {
         group_id: i64,
         name: &str,
         parent_id: &str,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = CreateGroupFileFolder {
             group_id,
             name: name.to_string(),
@@ -1028,7 +1027,7 @@ impl Bot {
         &mut self,
         group_id: i64,
         folder_id: &str,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = DeleteGroupFolder {
             group_id,
             folder_id: folder_id.to_string(),
@@ -1046,7 +1045,7 @@ impl Bot {
         group_id: i64,
         file_id: &str,
         busid: i32,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = DeleteGroupFile {
             group_id,
             file_id: file_id.to_string(),
@@ -1121,7 +1120,7 @@ impl Bot {
         &mut self,
         context: Value,
         operation: Value,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = HandleQuickOperation {
             context,
             operation,
@@ -1139,7 +1138,7 @@ impl Bot {
         group_id: i64,
         content: &str,
         image: &str,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SendGroupNotice {
             group_id,
             content: content.to_string(),
@@ -1175,7 +1174,7 @@ impl Bot {
     pub async fn reload_event_filter(
         &mut self,
         file: &str,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = ReloadEventFilter {
             file: file.to_string(),
         };
@@ -1229,7 +1228,7 @@ impl Bot {
     pub async fn set_essence_msg(
         &mut self,
         message_id: i64,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SetEssenceMsg {
             message_id,
         };
@@ -1244,7 +1243,7 @@ impl Bot {
     pub async fn delete_essence_msg(
         &mut self,
         message_id: i64,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = DeleteEssenceMsg {
             message_id,
         };
@@ -1278,7 +1277,7 @@ impl Bot {
     pub async fn check_url_safely(
         &mut self,
         url: &str,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = CheckUrlSafely {
             url: url.to_string(),
         };
@@ -1313,7 +1312,7 @@ impl Bot {
         &mut self,
         model: &str,
         model_show: &str,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SetModelShow {
             model: model.to_string(),
             model_show: model_show.to_string(),
@@ -1329,7 +1328,7 @@ impl Bot {
     pub async fn delete_unidirectional_friend(
         &mut self,
         user_id: i64,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = DeleteUnidirectionalFriend {
             user_id,
         };
@@ -1345,7 +1344,7 @@ impl Bot {
         &mut self,
         user_id: i64,
         message: Message,
-    ) -> Option<Frame> {
+    ) -> Option<ResultFrame> {
         let re = SendPrivateForwardMsg {
             user_id,
             message,

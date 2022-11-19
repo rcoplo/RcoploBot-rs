@@ -1,4 +1,5 @@
-use crate::core::bot::{Bot, Frame};
+use crate::api::GetStrangerInfoResult;
+use crate::core::bot::{Bot, ResultFrame};
 use crate::core::event::{Event, GroupMessageEvent, GroupSender};
 use crate::core::message::Message;
 
@@ -31,22 +32,24 @@ impl Group {
             bot: bot.clone(),
         }
     }
-    pub async fn send_group_msg(&mut self, message: Vec<Message>) -> Option<Frame> {
+    pub async fn send_group_msg(&mut self, message: Vec<Message>) -> Option<ResultFrame> {
         self.bot.send_group_msg(self.group_id, message).await
     }
 
-    pub async fn send_group_msg_cq(&mut self, message: String) -> Option<Frame> {
+    pub async fn send_group_msg_cq(&mut self, message: String) -> Option<ResultFrame> {
         self.bot.send_group_msg_cq(self.group_id, message).await
     }
 
-    pub async fn send_group_forward_msg(&mut self, message: Vec<Message>) -> Option<Frame> {
+    pub async fn send_group_forward_msg(&mut self, message: Vec<Message>) -> Option<ResultFrame> {
         self.bot.send_group_forward_msg(self.group_id, message).await
     }
 
-    pub async fn delete_msg(&mut self) -> Option<Frame> {
-        self.bot.delete_msg(self.message_id).await
+    pub async fn delete_msg(&mut self,message_id:i64) -> Option<ResultFrame> {
+        self.bot.delete_msg(message_id).await
     }
-
+    pub async fn get_stranger_info(&mut self ) -> Option<GetStrangerInfoResult> {
+        self.bot.get_stranger_info(self.user_id).await
+    }
     pub fn get_group_avatar(&self) -> String {
         format!("https://p.qlogo.cn/gh/{0}/{0}/0/", self.group_id)
     }

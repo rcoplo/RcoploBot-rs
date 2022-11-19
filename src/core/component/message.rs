@@ -12,11 +12,11 @@ pub struct Message {
 
 }
 
-pub fn text(text: &str) -> Message {
+pub fn text<T:  AsRef<str>>(text: T) -> Message {
     Message {
         r#type: "text".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
-            ("text".to_string(), text.to_string()),
+            ("text".to_string(),text.as_ref().to_string()),
         ])),
     }
 }
@@ -122,11 +122,11 @@ pub fn music_all(r#type: &str, url: &str, audio: &str, title: &str, content: &st
     }
 }
 
-pub fn image(url: &str) -> Message {
+pub fn image<T:  AsRef<str>>(url: T) -> Message {
     Message {
         r#type: "image".to_string(),
         data: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
-            ("file".to_string(), url.to_string()),
+            ("file".to_string(), url.as_ref().to_string()),
         ])),
     }
 }

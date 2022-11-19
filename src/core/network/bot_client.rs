@@ -10,7 +10,7 @@ use serde_json::{to_string, Value};
 use tokio_tungstenite::{connect_async};
 use tokio_tungstenite::tungstenite::{Error, Message, WebSocket};
 
-use crate::core::bot::{Bot, Frame};
+use crate::core::bot::{Bot, ResultFrame};
 use crate::core::component::event::{Event, PostType};
 use crate::core::component::message::text;
 
@@ -36,12 +36,12 @@ impl WsClient {
         };
         let (api_sender, mut api_receiver) = mpsc::channel(1024);
 
-        let (mut ws_steam, _) = connect_async(url).await.unwrap();
+        let (ws_steam, _) = connect_async(url).await.unwrap();
         let bot_id = config.bot_id.unwrap();
         let (mut ws_out, mut ws_in) = ws_steam.split();
 
         let resp_promises = Arc::new(Mutex::new(HashMap::new()));
-        let mut bot = Bot {
+        let bot = Bot {
             bot_id: bot_id.clone(),
             bot_name: config.bot_name.unwrap(),
             api_sender: mpsc::Sender::clone(&api_sender),
@@ -67,7 +67,6 @@ impl WsClient {
                 match msg {
                     Message::Text(msg) => {
                         let json: Value = serde_json::from_str(msg.as_str()).unwrap();
-
                         let mut bot = bot.clone();
                         tokio::spawn(async move {
                             let event = Event::get_event(json);
@@ -80,7 +79,7 @@ impl WsClient {
                                                 let data = event.data;
                                                 if event.status.contains("ok") {
                                                     if data["message_id"].is_null() {
-                                                        let frame1 = Frame {
+                                                        let frame1 = ResultFrame {
                                                             bot_id: bot_id.clone(),
                                                             echo: event.echo,
                                                             ok: true,
@@ -88,8 +87,8 @@ impl WsClient {
                                                             message_id: 0,
                                                         };
                                                         api_resp_sender.send(frame1);
-                                                    }else {
-                                                        let frame1 = Frame {
+                                                    } else {
+                                                        let frame1 = ResultFrame {
                                                             bot_id: bot_id.clone(),
                                                             echo: event.echo,
                                                             ok: true,
@@ -98,8 +97,8 @@ impl WsClient {
                                                         };
                                                         api_resp_sender.send(frame1);
                                                     }
-                                                }else {
-                                                    let frame1 = Frame {
+                                                } else {
+                                                    let frame1 = ResultFrame {
                                                         bot_id: bot_id.clone(),
                                                         echo: event.echo,
                                                         ok: false,

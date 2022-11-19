@@ -3,7 +3,7 @@ pub struct BotConfig {
     pub r#type: Option<String>,
     pub url: Option<String>,
     pub access_token: Option<String>,
-    pub super_administrator: Vec<String>,
+    pub super_administrator: Vec<i64>,
     pub bot_name: Option<String>,
     pub bot_id: Option<i64>,
 }

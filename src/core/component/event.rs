@@ -13,22 +13,7 @@ pub enum PostType {
     MetaEvent(Value),
     Null(Value)
 }
-#[derive(Serialize, Deserialize)]
-pub enum NoticeType {
-    GroupUpload,
-    GroupAdmin,
-    GroupDecrease,
-    GroupIncrease,
-    GroupBan,
-    FriendAdd,
-    GroupRecall,
-    FriendRecall,
-    GroupCard,
-    OfflineFile,
-    ClientStatus,
-    Essence,
-    Notify,
-}
+
 #[derive(Serialize, Deserialize)]
 pub enum NoticeNotifySubType {
     Honor,
@@ -43,13 +28,8 @@ pub enum SubType {
     Normal,
     Anonymous,
     Notice,
+}
 
-}
-#[derive(Serialize, Deserialize)]
-pub enum RequestType {
-    Friend,
-    Group,
-}
 #[derive(Serialize, Deserialize)]
 pub enum MetaEventType {
     Lifecycle,
@@ -152,7 +132,7 @@ impl Event{
 
             }
             PostType::MetaEvent(json) => {
-                // TODO: 心跳什么时都不做
+                // TODO: 心跳什么事都不做
                 None
             }
             PostType::Null(json) => {

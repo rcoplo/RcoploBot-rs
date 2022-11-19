@@ -26,6 +26,17 @@ impl ImageUtils {
             image_buffer: buffer
         }
     }
+    pub fn new_buf(iamge:RgbaImage) -> ImageUtils {
+        Self {
+            image_buffer: iamge
+        }
+    }
+    pub fn new_file(file:String) -> ImageUtils {
+        let dynamic = image::open(file).unwrap();
+        Self {
+            image_buffer: dynamic.to_rgba8()
+        }
+    }
     //设置图片的颜色
     pub fn set_background_color(&mut self, color: [u8; 4]) {
         for (x, y, pixel) in self.image_buffer.enumerate_pixels_mut() {
@@ -48,10 +59,8 @@ impl ImageUtils {
 
     //设置本地图片
     pub fn set_background_file(&mut self, file: String) {
-        let mut image = image::open(file).unwrap();
-        let mut img = image.to_rgba8();
-
-        &self.image_buffer.copy_from::<RgbaImage>(&img, 0, 0);
+        let image = image::open(file).unwrap();
+        &self.image_buffer.copy_from::<RgbaImage>(&image.to_rgba8(), 0, 0);
     }
 
     //设置高斯模糊
@@ -152,9 +161,8 @@ impl ImageUtils {
     pub fn draw_image_newline_file(&mut self, fxy: HashMap<String, [u32; 2]>) {
         let (w, h) = &self.image_buffer.dimensions();
         for (file, xy) in fxy {
-            let mut image = image::open(file).unwrap();
-            let img = image.to_rgba8();
-            for (x1, y1, pixel) in img.enumerate_pixels() {
+            let image = image::open(file).unwrap();
+            for (x1, y1, pixel) in image.to_rgba8().enumerate_pixels() {
                 if (x1 < *w) && (y1 < *h) {
                     &self.image_buffer.put_pixel(x1+xy[0], y1+xy[1], *pixel);
                 }
@@ -282,7 +290,7 @@ impl ImageUtils {
 
 
 pub async fn get_url_image(url: &str) -> Option<RgbaImage> {
-    let mut data = reqwest::get(url).await;
+    let data = reqwest::get(url).await;
     let content = match data {
         Ok(data) => { Some(data.bytes().await.unwrap()) }
         Err(err) => {

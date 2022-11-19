@@ -1,4 +1,5 @@
-use crate::core::bot::{Bot, Frame};
+use crate::api::GetStrangerInfoResult;
+use crate::core::bot::{Bot, ResultFrame};
 use crate::core::event::{Event, FriendMessageEvent, FriendSender};
 use crate::core::message::Message;
 
@@ -30,21 +31,20 @@ impl Friend {
         }
     }
 
-    pub async fn send_private_msg(
-        &mut self,
-        message: Vec<Message>,
-    ) -> Option<Frame> {
+    pub async fn send_private_msg(&mut self, message: Vec<Message>, ) -> Option<ResultFrame> {
         self.bot.send_private_msg(self.user_id,message).await
     }
 
-    pub async fn send_private_msg_cq(&mut self, user_id: i64, message: String) -> Option<Frame> {
+    pub async fn send_private_msg_cq(&mut self, user_id: i64, message: String) -> Option<ResultFrame> {
         self.bot.send_private_msg_cq(self.user_id,message).await
     }
 
-    pub async fn delete_msg(&mut self) -> Option<Frame> {
+    pub async fn delete_msg(&mut self) -> Option<ResultFrame> {
         self.bot.delete_msg(self.message_id).await
     }
-
+    pub async fn get_stranger_info(&mut self ) -> Option<GetStrangerInfoResult> {
+        self.bot.get_stranger_info(self.user_id).await
+    }
     pub fn get_user_avatar(&self) -> String {
         format!("https://q1.qlogo.cn/g?b=qq&nk={}&s=0", self.user_id)
     }
