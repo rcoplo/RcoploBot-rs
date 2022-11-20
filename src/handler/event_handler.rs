@@ -17,7 +17,6 @@ use crate::util::regex_utils::contain;
 pub async fn event_handle(event: Event, bot: &mut Bot) {
     let group = match &event {
         Event::GroupMessageEvent(event) => {
-            info!("G::{} >Q::{} >{}",&event.group_id,&event.user_id,&event.raw_message);
             Some(Group::new(event, bot))
         }
         _ => None
@@ -25,18 +24,11 @@ pub async fn event_handle(event: Event, bot: &mut Bot) {
 
     let friend = match &event {
         Event::FriendMessageEvent(event) => {
-            info!("Q::{} >{}",&event.user_id,&event.raw_message);
             Some(Friend::new(event, bot))
         }
         _ => None
     };
 
-    match &event {
-        Event::AddFriendRequest(event) => {
-            friend_handle_module(&mut Request::new_add_friend(event, bot)).await;
-        }
-        _ => {}
-    }
 
     match group {
         None => {}
@@ -68,6 +60,9 @@ pub async fn event_handle(event: Event, bot: &mut Bot) {
                             _ => {}
                         }
                     }
+                    if option.get("osusb").unwrap().as_bool() == Some(true) {
+                        osu_sb_group_module_handle(&mut data).await;
+                    }
                 }
             }
         }
@@ -78,6 +73,13 @@ pub async fn event_handle(event: Event, bot: &mut Bot) {
             setu_friend_handle(&mut data).await;
         }
     }
+    match &event {
+        Event::AddFriendRequest(event) => {
+            friend_handle_module(&mut Request::new_add_friend(event, bot)).await;
+        }
+        _ => {}
+    }
+
 }
 
 pub async fn notice_event_handle(event: &Event, bot: &mut Bot) {

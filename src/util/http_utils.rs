@@ -1,22 +1,23 @@
+use std::fmt::Display;
 use futures_util::TryFutureExt;
 use reqwest::header::HeaderMap;
-use reqwest::Response;
+use reqwest::{Error, Response};
 use serde_json::Value;
 
-pub async fn get_json(url:&str) -> Option<Value>{
-    let data = reqwest::get(url).await;
+pub async fn get_json<U: AsRef<str> + Display  + reqwest::IntoUrl>(url:U) -> Result<Value,Error>{
+    let data = reqwest::get(<U as Into<U>>::into(url)).await;
     match data {
         Ok(data) => {
             let result = data.text().await.ok();
-            serde_json::from_str(result.unwrap_or_default().as_str()).ok().unwrap_or_default()
+            Ok(serde_json::from_str(result.unwrap_or_default().as_str()).ok().unwrap_or_default())
         }
-        Err(_) => None
+        Err(err) => Err(err)
     }
 }
 
 
-pub async fn get_resp(url:&str) -> Option<Response>{
-    let data = reqwest::get(url).await;
+pub async fn get_resp<U: AsRef<str> + Display  + reqwest::IntoUrl>(url:U) -> Option<Response>{
+    let data = reqwest::get(<U as Into<U>>::into(url)).await;
     match data {
         Ok(data) => {
            Some(data)

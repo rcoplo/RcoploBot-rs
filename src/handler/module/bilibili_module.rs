@@ -1,6 +1,5 @@
-use crate::core::bot::Bot;
-use crate::core::event::Event;
+use crate::core::group::Group;
 
-pub async fn bilibili_module(event: &Event, bot: &mut Bot) {
+pub async fn bilibili_module_handle(group:&Group) {
 
 }

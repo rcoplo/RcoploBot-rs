@@ -1,5 +1,6 @@
 use std::array::IntoIter;
 use std::collections::HashMap;
+use log::info;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use crate::core::component::event::PostType::Null;
@@ -290,23 +291,93 @@ pub fn tts(text: &str) -> Message {
     }
 }
 
-pub fn message_type_handle(v: Value) -> Option<HashMap<String,Message>> {
-    if v.is_null() { return None; }
-    let json = v["message"].as_array();
-    let mut map = HashMap::new();
-    let msg:Option<HashMap<String,Message>> = match json {
-        None => None,
-        Some(json) => {
-            for value in json.iter() {
-                let r#type = value["type"].as_str().unwrap();
-                let result = serde_json::from_value::<Message>(value.clone()).unwrap();
-                map.insert(r#type.to_string(), result);
+impl ToString for Message {
+    fn to_string(&self) -> String {
+        match self.r#type.as_str() {
+            "text" => {
+                format!("{}",
+                        self.data.get("text").unwrap_or(&"null".to_string()),)
             }
-            return Some(map);
+            "face" => {
+                format!("face,{}",
+                        self.data.get("face").unwrap_or(&"null".to_string()),)
+            }
+            "record" => {
+                format!("record,{},{}",
+                        self.data.get("file").unwrap_or(&"null".to_string()),
+                        self.data.get("url").unwrap_or(&"null".to_string()))
+            }
+            "video" => {
+                format!("video,{}", self.data.get("file").unwrap_or(&"null".to_string()),)
+            }
+            "at" => {
+                format!("at,{},{}",
+                        self.data.get("qq").unwrap_or(&"null".to_string()),
+                        self.data.get("name").unwrap_or(&"null".to_string()))
+            }
+            "share" => {
+                format!("share,{},{},{},{}",
+                        self.data.get("url").unwrap_or(&"null".to_string()),
+                        self.data.get("title").unwrap_or(&"null".to_string()),
+                        self.data.get("content").unwrap_or(&"null".to_string()),
+                        self.data.get("image").unwrap_or(&"null".to_string()),
+                )
+            }
+            "image" => {
+                format!("image,{},{},{}",
+                        self.data.get("url").unwrap_or(&"null".to_string()),
+                        self.data.get("file").unwrap_or(&"null".to_string()),
+                        self.data.get("subType").unwrap_or(&"null".to_string()),
+                )
+            }
+            "reply" => {
+                format!("reply,{},{},{}",
+                        self.data.get("id").unwrap_or(&"null".to_string()),
+                        self.data.get("qq").unwrap_or(&"null".to_string()),
+                        self.data.get("text").unwrap_or(&"null".to_string()),
+                )
+            }
+            "redbag" => {
+                format!("redbag,{}",
+                        self.data.get("title").unwrap_or(&"null".to_string()),
+                )
+            }
+            "forward" => {
+                format!("forward,{}",
+                        self.data.get("id").unwrap_or(&"null".to_string()),
+                )
+            }
+            "xml" => {
+                format!("xml,{},{}",
+                        self.data.get("data").unwrap_or(&"null".to_string()),
+                        self.data.get("resid").unwrap_or(&"null".to_string()),
+                )
+            }
+            "json" => {
+                format!("json,{},{}",
+                        self.data.get("data").unwrap_or(&"null".to_string()),
+                        self.data.get("resid").unwrap_or(&"null".to_string()),
+                )
+            }
+            _ => {
+                format!("")
+            }
         }
-    };
-    msg
+
+    }
 }
+pub fn message_type_handle(message: Vec<Message>) -> Vec<String> {
+    let mut vec = vec![];
+    for msg in message {
+        let data = msg.to_string().replace(" ","");
+        if data != "" {
+            vec.push(data);
+        }
+
+    }
+    vec
+}
+
 
 
 

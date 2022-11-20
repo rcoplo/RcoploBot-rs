@@ -43,7 +43,7 @@ pub async fn group_function_handle(group_id:&i64) {
 pub async fn open_group_function(group: &mut Group){
     let vec1 = CONTEXT.bot_config.super_administrator.clone();
     if contain_int(&group.user_id,&vec1) {
-        if contain(&group.raw_message,&vec!["开启[\\s]+\\w+"]) {
+        if contain(&group.message[0],&vec!["开启[\\s]+\\w+"]) {
             if GroupFunctionService::open_function(&group.group_id,&group.message_list[1]).await {
                 let result = group.send_group_msg( vec![text(meow_ok(format!("开启 {} 功能成功",&group.message_list[1])))]).await;
                 log_result(result);
@@ -52,7 +52,7 @@ pub async fn open_group_function(group: &mut Group){
                 log_result(result);
             };
 
-        }else if contain(&group.raw_message,&vec!["关闭[\\s]+\\w+"])   {
+        }else if contain(&group.message[0],&vec!["关闭[\\s]+\\w+"])   {
             if GroupFunctionService::close_function(&group.group_id,&group.message_list[1]).await {
                 let result = group.send_group_msg( vec![text(meow_ok(format!("关闭 {} 功能成功",&group.message_list[1])))]).await;
                 log_result(result);

@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Error, Value};
 use crate::api::ApiResult;
 use crate::core::component::event;
+use crate::core::message::Message;
+
 #[derive(Debug)]
 pub enum PostType {
     Message(Value),
@@ -182,11 +184,7 @@ pub struct GroupSender{
     pub title: String,
     pub user_id: i64,
 }
-#[derive(Serialize, Deserialize,Debug,Clone)]
-pub struct Message<M>{
-    pub r#type: String,
-    pub data: M,
-}
+
 
 #[derive(Serialize, Deserialize,Debug,Clone)]
 pub struct FriendMessageEvent {
@@ -195,7 +193,7 @@ pub struct FriendMessageEvent {
     pub time:i64,
     pub self_id:i64,
     pub sub_type:String,
-    pub message:Vec<Message<Value>>,
+    pub message:Vec<Message>,
     pub raw_message:String,
     pub font:i32,
     pub sender:FriendSender,
@@ -218,7 +216,7 @@ pub struct GroupMessageEvent{
     pub anonymous:Value,
     pub font:i32,
     pub group_id:i64,
-    pub message:Vec<Message<Value>>,
+    pub message:Vec<Message>,
     pub message_seq:i64,
     pub raw_message:String,
     pub message_id:i64,

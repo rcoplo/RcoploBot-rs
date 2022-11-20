@@ -1,13 +1,14 @@
+use log::info;
 use crate::api::GetStrangerInfoResult;
 use crate::core::bot::{Bot, ResultFrame};
 use crate::core::event::{Event, FriendMessageEvent, FriendSender};
-use crate::core::message::Message;
+use crate::core::message::{Message, message_type_handle};
 
 #[derive(Debug,Clone)]
 pub struct Friend{
     pub user_id:i64,
     pub message_id:i64,
-    pub raw_message:String,
+    pub message:Vec<String>,
     pub message_list:Vec<String>,
     pub sender:FriendSender,
     pub bot:Bot,
@@ -16,15 +17,17 @@ pub struct Friend{
 impl Friend {
     pub fn new(event: &FriendMessageEvent, bot:&mut Bot) -> Self{
         let mut vec = vec![];
+        let vec1 = message_type_handle(event.message.clone());
         let binding = event.raw_message.clone();
         let msg_list:Vec<_> = binding.split_whitespace().collect();
         for msg in msg_list {
             vec.push(msg.to_string());
         }
+        info!("Q::{} >{:?}",&event.user_id,&vec1);
         Self {
             user_id: event.user_id.clone(),
             message_id: event.message_id.clone(),
-            raw_message: event.raw_message.clone(),
+            message: vec1,
             message_list: vec,
             sender: event.sender.clone(),
             bot: bot.clone(),

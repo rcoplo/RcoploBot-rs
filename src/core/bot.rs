@@ -20,7 +20,7 @@ pub struct Bot {
     pub resp_promises: Arc<Mutex<HashMap<String, oneshot::Sender<ResultFrame>>>>,
 }
 
-#[derive(Debug,Clone)]
+#[derive(Debug,Clone,serde::Deserialize,serde::Serialize)]
 pub struct ResultFrame {
     pub bot_id: i64,
     pub echo: String,
