@@ -41,27 +41,24 @@ impl BotHelp for AiHelp {
 
 pub async fn ai_group_module_handle(group: &mut Group) {
     let sign_help = BOT_HELP.help.get("签到").unwrap();
-    let (is, msg) = rex_utils(4,
-                              group.message.clone(),
+    let (is, msg) = rex_utils(1,
+                              &group.message,
                               None,
-                              "(.*)",
-                              None, );
+                              r"\w+",
+                              None,
+                              vec!["摸+", "好感度"]);
 
     if is {
-        if contain_(&group.message[0], sign_help.module_order.get("momo").unwrap()) {
-            if contain_(&group.message[0], sign_help.module_order.get("good_feeling").unwrap()) {
-                let ai = &AI.to_vec();
-                let name = CONTEXT.bot_config.bot_name.as_ref().unwrap();
-                let regex_set = RegexSet::new(vec![format!("[{}]", msg)]).unwrap();
-                for data in ai {
-                    if regex_set.is_match(data.r#type.as_str()) {
-                        let i = data.data.len();
-                        let i1 = rand::thread_rng().gen_range(0..i);
-                        let result = group.send_group_msg(vec![text(data.data.get(i1).unwrap())]).await;
-                        log_result(result);
-                        return;
-                    }
-                }
+        let ai = &AI.to_vec();
+        let name = CONTEXT.bot_config.bot_name.as_ref().unwrap();
+        let regex_set = RegexSet::new(vec![format!(r"[{}]", msg)]).unwrap();
+        for data in ai {
+            if regex_set.is_match(data.r#type.as_str()) {
+                let i = data.data.len();
+                let i1 = rand::thread_rng().gen_range(0..i);
+                let result = group.send_group_msg(vec![text(data.data.get(i1).unwrap())]).await;
+                log_result(result);
+                return;
             }
         }
     }

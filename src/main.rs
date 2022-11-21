@@ -1,10 +1,11 @@
 use std::env;
 use log::info;
 use serde_json::{json, json_internal};
+use RcoploBot_rs::core::event::{AddGroupRequest, GroupMemberDecrease, GroupMemberIncrease};
 use RcoploBot_rs::core::WsClient;
 use RcoploBot_rs::handler::api::osu_sb::OsuSbScores;
 use RcoploBot_rs::service::CONTEXT;
-use RcoploBot_rs::util::image_osu_sb::image_osu_sb_pr;
+
 
 #[tokio::main]
 async fn main() {
@@ -14,4 +15,8 @@ async fn main() {
     CONTEXT.init_pool().await;
     info!("Starting client...");
     WsClient::run().await;
+
+    // let data = r#""#;
+    // let result = serde_json::from_str::<GroupMemberIncrease>(data).unwrap();
+    // println!("{:?}",result);
 }

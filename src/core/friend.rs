@@ -8,7 +8,7 @@ use crate::core::message::{Message, message_type_handle};
 pub struct Friend{
     pub user_id:i64,
     pub message_id:i64,
-    pub message:Vec<String>,
+    pub message:String,
     pub message_list:Vec<String>,
     pub sender:FriendSender,
     pub bot:Bot,
@@ -17,17 +17,17 @@ pub struct Friend{
 impl Friend {
     pub fn new(event: &FriendMessageEvent, bot:&mut Bot) -> Self{
         let mut vec = vec![];
-        let vec1 = message_type_handle(event.message.clone());
+        let message = message_type_handle(event.message.clone());
         let binding = event.raw_message.clone();
         let msg_list:Vec<_> = binding.split_whitespace().collect();
         for msg in msg_list {
             vec.push(msg.to_string());
         }
-        info!("Q::{} >{:?}",&event.user_id,&vec1);
+        info!("Q::{} > {:?}",&event.user_id,&message);
         Self {
             user_id: event.user_id.clone(),
             message_id: event.message_id.clone(),
-            message: vec1,
+            message,
             message_list: vec,
             sender: event.sender.clone(),
             bot: bot.clone(),

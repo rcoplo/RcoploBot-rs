@@ -4,7 +4,6 @@ use once_cell::sync::Lazy;
 use crate::core::bot::Bot;
 use crate::core::event::Event;
 use crate::handler::{AiHelp, OsuSbHelp, SetuHelp, SignHelp};
-use crate::util::ImageUtils;
 
 pub static BOT_HELP: Lazy<HelpList> = Lazy::new(|| HelpList::default());
 

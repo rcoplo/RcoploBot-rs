@@ -15,12 +15,122 @@ use crate::service::{CONTEXT, GroupFunctionService, SetuService};
 use crate::util::regex_utils::contain;
 
 pub async fn event_handle(event: Event, bot: &mut Bot) {
-    let group = match &event {
-        Event::GroupMessageEvent(event) => {
-            Some(Group::new(event, bot))
+    let group_id = match &event {
+        Event::FriendMessageEvent(event) => {
+            None
         }
-        _ => None
+        Event::GroupMessageEvent(event) => {
+            Some(event.group_id)
+        }
+        Event::GroupFileUpload(event) => {
+            Some(event.group_id)
+        }
+        Event::GroupAdminChange(event) => {
+            Some(event.group_id)
+        }
+        Event::GroupMemberDecrease(event) => {
+            Some(event.group_id)
+        }
+        Event::GroupMemberIncrease(event) => {
+            Some(event.group_id)
+        }
+        Event::GroupBan(event) => {
+            Some(event.group_id)
+        }
+        Event::FriendAdd(event) => {
+            None
+        }
+        Event::GroupMessageRecall(event) => {
+            Some(event.group_id)
+        }
+        Event::FriendMessageRecall(event) => {
+            None
+        }
+        Event::FriendPoke(event) => {
+            None
+        }
+        Event::GroupPoke(event) => {
+            Some(event.group_id)
+        }
+        Event::TipsForLuckyKingOfRedPackets(event) => {
+            Some(event.group_id)
+        }
+        Event::GroupMemberHonorChangePrompt(event) => {
+            Some(event.group_id)
+        }
+        Event::GroupMemberBusinessCardUpdate(event) => {
+            Some(event.group_id)
+        }
+        Event::OfflineFileReceived(event) => {
+            None
+        }
+        Event::AddFriendRequest(event) => {
+            None
+        }
+        Event::AddGroupRequest(event) => {
+            Some(event.group_id)
+        }
+        Event::OtherClientOnlineStatusChanges(event) => {
+            None
+        }
+        Event::ApiResult(event) => {
+            None
+        }
+        Event::EssenceMessage(event) => {
+            None
+        }
+
     };
+    match group_id {
+        None => {
+
+        }
+        Some(group_id) => {
+            let function = GroupFunctionService::select_function(&group_id).await;
+            match function {
+                None => {
+                    add_group_function(&group_id).await;
+                }
+                Some(fun) => {
+                    let string = fun.function_list.unwrap();
+                    let result: Value = serde_json::from_str(string.as_str()).unwrap();
+                    let function = result.as_object().unwrap();
+                    let group = match &event {
+                        Event::GroupMessageEvent(event) => {
+                            Some(Group::new(event, bot))
+                        }
+                        _ => None
+                    };
+                    if function.get("groupHelp").unwrap().as_bool() == Some(true) {
+                        group_change_handle(&event, bot).await;
+                        if let Event::AddGroupRequest(event) = &event {
+                            group_handle_module(&mut Request::new_add_group(event, bot)).await;
+                        }
+                    }
+                    match group {
+                        None => {}
+                        Some(mut group) => {
+                            open_group_function(&mut group).await;
+
+                            if function.get("setu").unwrap().as_bool() == Some(true) {
+                                setu_group_handle(&mut group).await;
+                            }
+                            if function.get("签到").unwrap().as_bool() == Some(true) {
+                                sign_module_handle(&mut group).await;
+                            }
+                            if function.get("ai").unwrap().as_bool() == Some(true) {
+                                ai_group_module_handle(&mut group).await;
+                            }
+                            if function.get("osusb").unwrap().as_bool() == Some(true) {
+                                osu_sb_group_module_handle(&mut group).await;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     let friend = match &event {
         Event::FriendMessageEvent(event) => {
@@ -29,44 +139,6 @@ pub async fn event_handle(event: Event, bot: &mut Bot) {
         _ => None
     };
 
-
-    match group {
-        None => {}
-        Some(mut data) => {
-            group_function_handle(&data.group_id).await;
-            open_group_function(&mut data).await;
-            let function = GroupFunctionService::select_function(&data.group_id).await;
-            match function {
-                None => {}
-                Some(fun) => {
-                    let string = fun.function_list.unwrap();
-                    let result: Value = serde_json::from_str(string.as_str()).unwrap();
-                    let option = result.as_object().unwrap();
-                    if option.get("setu").unwrap().as_bool() == Some(true) {
-                        setu_group_handle(&mut data).await;
-                    }
-                    if option.get("签到").unwrap().as_bool() == Some(true) {
-                        sign_module_handle(&mut data).await;
-                    }
-                    if option.get("ai").unwrap().as_bool() == Some(true) {
-                        ai_group_module_handle(&mut data).await;
-                    }
-                    if option.get("groupHelp").unwrap().as_bool() == Some(true) {
-                        group_change_handle(&event, bot).await;
-                        match &event {
-                            Event::AddGroupRequest(event) => {
-                                group_handle_module(&mut Request::new_add_group(event, bot)).await;
-                            }
-                            _ => {}
-                        }
-                    }
-                    if option.get("osusb").unwrap().as_bool() == Some(true) {
-                        osu_sb_group_module_handle(&mut data).await;
-                    }
-                }
-            }
-        }
-    }
     match friend {
         None => {}
         Some(mut data) => {
@@ -79,7 +151,6 @@ pub async fn event_handle(event: Event, bot: &mut Bot) {
         }
         _ => {}
     }
-
 }
 
 pub async fn notice_event_handle(event: &Event, bot: &mut Bot) {

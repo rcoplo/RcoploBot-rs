@@ -32,6 +32,7 @@ impl Request {
             bot: bot.clone(),
         }
     }
+
     pub async fn set_friend_add_request(&mut self, approve: bool, remark: &str) -> Option<ResultFrame> {
         self.bot.set_friend_add_request(self.flag.as_str(), approve, remark).await
     }

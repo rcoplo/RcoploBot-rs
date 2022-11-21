@@ -11,7 +11,11 @@ pub fn contain(sources: &String, value: &Vec<&str>) -> bool {
     let bot_id = CONTEXT.bot_config.bot_id.as_ref().unwrap();
     let mut vec1 = vec![];
     for msg in value {
-        let string = msg.replace("{name}", &bot_name).replace("{id}", bot_id.to_string().as_str());
+        let string = msg
+            .replace("{name}", &bot_name)
+            .replace("{id}", bot_id.to_string().as_str())
+            .replace("{at}", r"at\{\d+,(.+)\} ")
+            .replace("{reply}", r"reply\{-?\d+,\d+,(.+)}(.+) ");
         vec1.push(format!("^{}$", string));
     }
     let set = RegexSet::new(&vec1).unwrap();
@@ -49,65 +53,49 @@ pub fn replace_regex_all(regex: &str, rep: &str, value: String) -> Value {
     Value::from(s2.to_string())
 }
 
-pub fn replace_regex(regex: &str, rep: &str, value: String) -> Value {
+fn replace_regex(regex: &str, rep: &str, value: String) -> String {
     let set = Regex::new(&regex).unwrap();
     let s2 = set.replace(&value, rep);
-    Value::from(s2.to_string())
+    s2.to_string()
 }
 
 
 //匹配类型
-pub fn rex_utils(r#type: i8, msg: Vec<String>, name: Option<String>, message: &str, qq: Option<i64>) -> (bool, String) {
+pub fn rex_utils(select:i8, msg: &String, name: Option<String>, regex: &str, qq: Option<i64>,no_message:Vec<&str>) -> (bool, String) {
     let bot_name = CONTEXT.bot_config.bot_name.as_ref().unwrap().clone();
     let bot_id = CONTEXT.bot_config.bot_id.as_ref().unwrap();
-    let string = name.unwrap_or(bot_name);
-    let mut string1 = String::new();
-    for x in &msg {
-        string1.push_str(x.as_str());
-    }
-    let data = match r#type {
-        1 => {
-            if msg.len() == 1 {
-                let name_msg = format!("{}{}", string.clone(), message);
-                let msg_name = format!("{}{}", message, string.clone());
-                let yes = RegexSet::new(&vec![name_msg, msg_name]).unwrap();
-                return (yes.is_match(string1.as_str()), msg[0].to_string());
-            } else {
-                (false, "".to_string())
-            }
-        }
-        2 => {
-            if msg.len() == 2 && msg[0].contains("at") {
-                let at = format!("at,{}[\\s]*{}", qq.unwrap_or(*bot_id), message);
-                let yes = RegexSet::new(&vec![at]).unwrap();
-                return (yes.is_match(string1.as_str()), msg[1].to_string());
-            } else {
-                (false, "".to_string())
-            }
-        }
-        3 => {
-            if msg.len() > 2 && msg[0].contains("reply") {
-                let reply = format!("reply,(.*),{0},(.*)at,{0}(.*)[\\s]*(at,{0}(.*))?[\\s]*{1}", qq.unwrap_or(*bot_id), message);
-                info!("{}",&reply);
-                info!("{}",&string1);
-                let yes = RegexSet::new(&vec![reply]).unwrap();
-                return (yes.is_match(string1.as_str()), msg[2].to_string());
-            } else {
-                (false, "".to_string())
-            }
-        }
-        4 => {
-            if msg.len() == 1 || msg.len() == 2 && msg[0].contains("at") {
-                let name_msg = format!("{}{}", string.clone(), message);
-                let msg_name = format!("{}{}", message, string.clone());
-                let at = format!("at,{}[\\s]*{}", qq.unwrap_or(*bot_id), message);
-                let yes = RegexSet::new(&vec![at, name_msg, msg_name]).unwrap();
-                return (yes.is_match(string1.as_str()), string1.replace(" ", ""));
-            } else {
-                (false, "".to_string())
-            }
-        }
-        _ => (false, "".to_string())
+    let name = name.unwrap_or(bot_name.clone());
+    let qq = qq.unwrap_or(*bot_id);
+
+    let vec =  match   select {
+        0=> vec![msg_name(regex, &name), name_msg(&name, regex)],
+        1=> vec![at_rex(&qq,regex), msg_name(regex, &name), name_msg(&name, regex)],
+        2=> vec![at_rex(&qq,regex), reply_rex(&qq,regex), msg_name(regex, &name), name_msg(&name, regex)],
+        _ => vec![]
     };
-    data
+    let result = RegexSet::new(&vec).unwrap();
+    let value = replace_regex(r"(.*)}", "", msg.replace("-", ""));
+    for x in no_message {
+        let set = RegexSet::new(&vec![at_rex(&qq,x), reply_rex(&qq,x), msg_name(x, &name), name_msg(&name, x)]).unwrap();
+        if set.is_match(msg.as_str()){
+            return (false, value.replace(bot_name.clone().as_str(), ""));
+        }
+    }
+    (result.is_match(msg.as_str()), value.replace(bot_name.clone().as_str(), ""))
+}
+
+fn at_rex(qq:&i64,regex:&str) ->String{
+    format!(r"^at\{{{0},(.+)}}[\s]*{1}$",qq,regex)
+}
+
+fn reply_rex(qq:&i64,regex:&str) ->String{
+    format!(r"^reply\{{-?\d+,{0},(.+)}}(.+)[\s]*{1}$",qq,regex)
+}
+
+fn msg_name(regex:&str,name:&str) ->String{
+    format!("^{}{}$",regex,name)
+}
+
+fn name_msg(name:&str,regex:&str) ->String{
+    format!("^{}{}$",name,regex)
 }

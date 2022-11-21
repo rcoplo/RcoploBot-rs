@@ -299,24 +299,24 @@ impl ToString for Message {
                         self.data.get("text").unwrap_or(&"null".to_string()),)
             }
             "face" => {
-                format!("face,{}",
+                format!("face{{{}}}",
                         self.data.get("face").unwrap_or(&"null".to_string()),)
             }
             "record" => {
-                format!("record,{},{}",
+                format!("record{{{},{}}}",
                         self.data.get("file").unwrap_or(&"null".to_string()),
                         self.data.get("url").unwrap_or(&"null".to_string()))
             }
             "video" => {
-                format!("video,{}", self.data.get("file").unwrap_or(&"null".to_string()),)
+                format!("video{{{}}}", self.data.get("file").unwrap_or(&"null".to_string()),)
             }
             "at" => {
-                format!("at,{},{}",
+                format!("at{{{},{}}}",
                         self.data.get("qq").unwrap_or(&"null".to_string()),
                         self.data.get("name").unwrap_or(&"null".to_string()))
             }
             "share" => {
-                format!("share,{},{},{},{}",
+                format!("share{{{},{},{},{}}}",
                         self.data.get("url").unwrap_or(&"null".to_string()),
                         self.data.get("title").unwrap_or(&"null".to_string()),
                         self.data.get("content").unwrap_or(&"null".to_string()),
@@ -324,58 +324,55 @@ impl ToString for Message {
                 )
             }
             "image" => {
-                format!("image,{},{},{}",
+                format!("image{{{},{},{}}}",
                         self.data.get("url").unwrap_or(&"null".to_string()),
                         self.data.get("file").unwrap_or(&"null".to_string()),
                         self.data.get("subType").unwrap_or(&"null".to_string()),
                 )
             }
             "reply" => {
-                format!("reply,{},{},{}",
+                format!("reply{{{},{},{}}}",
                         self.data.get("id").unwrap_or(&"null".to_string()),
                         self.data.get("qq").unwrap_or(&"null".to_string()),
                         self.data.get("text").unwrap_or(&"null".to_string()),
                 )
             }
             "redbag" => {
-                format!("redbag,{}",
+                format!("redbag{{{}}}",
                         self.data.get("title").unwrap_or(&"null".to_string()),
                 )
             }
             "forward" => {
-                format!("forward,{}",
+                format!("forward{{{}}}",
                         self.data.get("id").unwrap_or(&"null".to_string()),
                 )
             }
             "xml" => {
-                format!("xml,{},{}",
+                format!("xml{{{},{}}}",
                         self.data.get("data").unwrap_or(&"null".to_string()),
                         self.data.get("resid").unwrap_or(&"null".to_string()),
                 )
             }
             "json" => {
-                format!("json,{},{}",
+                format!("json{{{},{}}}",
                         self.data.get("data").unwrap_or(&"null".to_string()),
                         self.data.get("resid").unwrap_or(&"null".to_string()),
                 )
             }
             _ => {
-                format!("")
+                format!("null")
             }
         }
 
     }
 }
-pub fn message_type_handle(message: Vec<Message>) -> Vec<String> {
-    let mut vec = vec![];
+pub fn message_type_handle(message: Vec<Message>) -> String {
+    let mut str = String::new();
     for msg in message {
-        let data = msg.to_string().replace(" ","");
-        if data != "" {
-            vec.push(data);
-        }
-
+        let data = msg.to_string();
+        str.push_str(data.as_str());
     }
-    vec
+    str
 }
 
 

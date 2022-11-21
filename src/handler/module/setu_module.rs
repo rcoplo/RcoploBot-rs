@@ -18,7 +18,7 @@ use crate::handler::api::{get_lolicon, get_lolicon_list, get_lolicon_list_tag, g
 use crate::handler::{log_result, log_result_by_return, meow_err, meow_log};
 use crate::handler::bot_help::{BOT_HELP, BotHelp, Help};
 use crate::service::{CONTEXT, GroupFunctionService, SetuService};
-use crate::util::regex_utils::{contain, replace_regex};
+use crate::util::regex_utils::{contain};
 
 pub struct SetuHelp;
 
@@ -52,19 +52,19 @@ impl BotHelp for SetuHelp {
 pub async fn setu_friend_handle(friend: &mut Friend) {
     // let mut friend = friend.clone();
     let setu_help = &BOT_HELP.help.get("setu").unwrap().module_order;
-    if contain(&friend.message[0], setu_help.get("setu").unwrap()) {
+    if contain(&friend.message, setu_help.get("setu").unwrap()) {
         meow_log("setu_friend", 0);
         setu_friend(friend).await;
-    } else if contain(&friend.message[0], setu_help.get("setu_tag").unwrap()) {
+    } else if contain(&friend.message, setu_help.get("setu_tag").unwrap()) {
         meow_log("setu_friend_tag", 0);
         setu_friend_tag(friend).await;
-    } else if contain(&friend.message[0], setu_help.get("setu_rand").unwrap()) {
+    } else if contain(&friend.message, setu_help.get("setu_rand").unwrap()) {
         meow_log("rand_setu_friend", 0);
         rand_setu_friend(friend).await;
-    } else if contain(&friend.message[0], setu_help.get("setu_list").unwrap()) {
+    } else if contain(&friend.message, setu_help.get("setu_list").unwrap()) {
         meow_log("setu_friend_list", 0);
         setu_friend_list(friend).await;
-    } else if contain(&friend.message[0], setu_help.get("setu_list_tag").unwrap()) {
+    } else if contain(&friend.message, setu_help.get("setu_list_tag").unwrap()) {
         meow_log("setu_friend_list_tag", 0);
         setu_friend_list_tag(friend).await;
     };
@@ -72,19 +72,19 @@ pub async fn setu_friend_handle(friend: &mut Friend) {
 
 pub async fn setu_group_handle(group: &mut Group) {
     let setu_help = &BOT_HELP.help.get("setu").unwrap().module_order;
-    if contain(&group.message[0], setu_help.get("setu").unwrap()) {
+    if contain(&group.message, setu_help.get("setu").unwrap()) {
         meow_log("setu_group", 0);
         setu_group(group).await;
-    } else if contain(&group.message[0], setu_help.get("setu_tag").unwrap()) {
+    } else if contain(&group.message, setu_help.get("setu_tag").unwrap()) {
         meow_log("setu_group_tag", 0);
         setu_group_tag(group).await;
-    } else if contain(&group.message[0], setu_help.get("setu_rand").unwrap()) {
+    } else if contain(&group.message, setu_help.get("setu_rand").unwrap()) {
         meow_log("rand_setu_group", 0);
         // rand_setu_group(&mut group).await;
-    } else if contain(&group.message[0], setu_help.get("setu_list").unwrap()) {
+    } else if contain(&group.message, setu_help.get("setu_list").unwrap()) {
         meow_log("setu_group_list", 0);
         setu_group_list(group).await;
-    } else if contain(&group.message[0], setu_help.get("setu_list_tag").unwrap()) {
+    } else if contain(&group.message, setu_help.get("setu_list_tag").unwrap()) {
         meow_log("setu_group_list_tag", 0);
         setu_group_list_tag(group).await;
     };
@@ -133,7 +133,7 @@ async fn setu_friend_tag(friend: &mut Friend) {
 
 async fn setu_friend_list(friend: &mut Friend) {
     let result = Regex::new(r"(?P<last>\d+)(.*)").unwrap();
-    let cow = result.replace(friend.message[0].as_str(), "$last").parse::<i64>().unwrap();
+    let cow = result.replace(friend.message.as_str(), "$last").parse::<i64>().unwrap();
 
     let lolicon = get_lolicon_list(cow).await;
     match lolicon {
@@ -154,7 +154,7 @@ async fn setu_friend_list(friend: &mut Friend) {
 
 async fn setu_friend_list_tag(friend: &mut Friend) {
     let result = Regex::new(r"(?P<last>\d+)(.*)").unwrap();
-    let cow = result.replace(friend.message[0].as_str(), "$last").parse::<i64>().unwrap();
+    let cow = result.replace(friend.message.as_str(), "$last").parse::<i64>().unwrap();
     let mut vec = Vec::new();
     let split: Vec<_> = friend.message_list[1].split("|").collect();
     for str in split {
@@ -181,7 +181,6 @@ async fn rand_setu_friend(friend: &mut Friend) {
     let setu = SetuService::rand_setu().await;
     match setu {
         None => {
-
 
         }
         Some(setu) => {
@@ -230,7 +229,7 @@ async fn setu_group(group: &mut Group) {
 async fn setu_group_list(group: &mut Group) {
     let mut group = group.clone();
     let result = Regex::new(r"(?P<last>\d+)(.*)").unwrap();
-    let cow = result.replace(group.message[0].as_str(), "$last").parse::<i64>().unwrap();
+    let cow = result.replace(group.message.as_str(), "$last").parse::<i64>().unwrap();
     let lolicon = get_lolicon_list(cow).await;
     match lolicon {
         None => {
@@ -267,7 +266,7 @@ async fn setu_group_list_tag(group: &mut Group) {
     let mut group = group.clone();
 
     let result = Regex::new(r"(?P<last>\d+)(.*)").unwrap();
-    let cow = result.replace(group.message[0].as_str(), "$last").parse::<i64>().unwrap();
+    let cow = result.replace(group.message.as_str(), "$last").parse::<i64>().unwrap();
     let mut vec = Vec::new();
     let split: Vec<_> = group.message_list[1].split("|").collect();
     for str in split {

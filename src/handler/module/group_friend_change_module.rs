@@ -1,3 +1,4 @@
+use log::info;
 use crate::api::GetStrangerInfoResult;
 use crate::core::bot::{Bot, ResultFrame};
 use crate::core::event::{Event, GroupMemberDecrease, GroupMemberIncrease};
@@ -38,9 +39,11 @@ pub async fn friend_handle_module(request: &mut Request) {
 pub async fn group_change_handle(event: &Event, bot: &mut Bot){
     match event {
         Event::GroupMemberDecrease(event) => {
+
             member_change_decrease_handle_module(&mut Notice::new_group_member_decrease(event, bot)).await;
         }
         Event::GroupMemberIncrease(event) => {
+
             member_change_increase_handle_module(&mut Notice::new_group_member_increase(event, bot)).await;
         }
         _ => {}

@@ -8,7 +8,7 @@ use crate::domain::SignGroupUsers;
 use crate::handler::{bot_name_compound, log_result};
 use crate::handler::bot_help::{BOT_HELP, BotHelp, Help};
 use crate::service::{CONTEXT, SignGroupUsersService};
-use crate::util::regex_utils::contain;
+use crate::util::regex_utils::{contain, rex_utils};
 
 
 pub struct SignHelp;
@@ -19,8 +19,8 @@ impl BotHelp for SignHelp {
             module_name: "Sign 简易的签到功能".to_string(),
             module_name_abbreviation: "签到".to_string(),
             module_order: HashMap::<_, _>::from_iter(IntoIterator::into_iter([
-                ("momo", vec!["{name}摸+", "摸+{name}"]),
-                ("good_feeling", vec!["{name}好感度", "好感度{name}"]),
+                ("momo", vec!["{name}摸+", "摸+{name}","{at}摸+"]),
+                ("good_feeling", vec!["{name}好感度", "好感度{name}","{at}好感度"]),
             ])),
             module_default: true,
             module_help: vec![
@@ -33,7 +33,7 @@ impl BotHelp for SignHelp {
 
 pub async fn sign_module_handle(group: &mut Group) {
     let sign_help = BOT_HELP.help.get("签到").unwrap();
-    if contain(&group.message[0], sign_help.module_order.get("momo").unwrap()) {
+    if contain(&group.message, sign_help.module_order.get("momo").unwrap()) {
         let sign2 = SignGroupUsersService::select_is_sign(&group.user_id, &group.group_id).await;
         match sign2 {
             None => {
@@ -71,7 +71,7 @@ pub async fn sign_module_handle(group: &mut Group) {
                 }
             }
         }
-    } else if contain(&group.message[0], sign_help.module_order.get("good_feeling").unwrap()) {
+    } else if contain(&group.message, sign_help.module_order.get("good_feeling").unwrap()) {
         let sign2 = SignGroupUsersService::select_is_sign(&group.user_id, &group.group_id).await;
         match sign2 {
             None => {
