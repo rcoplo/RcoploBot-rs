@@ -1,4 +1,5 @@
-use crate::api::GetStrangerInfoResult;
+use log::info;
+use crate::core::api::GetStrangerInfoResult;
 use crate::core::bot::{Bot, ResultFrame};
 use crate::core::event;
 use crate::core::event::{EssenceMessage, FriendAdd, FriendMessageRecall, FriendPoke, GroupAdminChange, GroupBan, GroupFileUpload, GroupMemberBusinessCardUpdate, GroupMemberDecrease, GroupMemberHonorChangePrompt, GroupMemberIncrease, GroupMessageRecall, GroupPoke, OfflineFileReceived, OtherClientOnlineStatusChanges, TipsForLuckyKingOfRedPackets};
@@ -9,7 +10,7 @@ pub struct Notice<E> {
     pub notice_type: String,
     pub sub_type: String,
     pub event: E,
-    pub bot: Bot,
+    bot: Bot,
 }
 
 impl Notice<GroupFileUpload> {

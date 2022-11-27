@@ -1,37 +1,39 @@
 use log::info;
-use crate::api::GetStrangerInfoResult;
-use crate::core::bot::{Bot, ResultFrame};
+use crate::core::api::GetStrangerInfoResult;
+use crate::core::bot::{Bot, message_handle, ResultFrame};
 use crate::core::event::{Event, GroupMessageEvent, GroupSender};
 use crate::core::message::{Message, message_type_handle};
 
 
 #[derive(Debug,Clone)]
 pub struct Group {
+    //群号
     pub group_id: i64,
+    //群成员
     pub user_id: i64,
+    //消息id
     pub message_id: i64,
+    //格式化的消息
     pub message:String,
+    //以空格分组的消息
     pub message_list:Vec<String>,
+    //群成员的信息
     pub sender: GroupSender,
-    pub bot: Bot,
+    //bot
+    bot: Bot,
 }
 
 impl Group {
     pub fn new(event: &GroupMessageEvent, bot:&mut Bot) -> Self {
-        let mut vec = vec![];
-        let message = message_type_handle(event.message.clone());
-        let binding = event.raw_message.clone();
-        let msg_list:Vec<_> = binding.split_whitespace().collect();
-        for msg in msg_list {
-            vec.push(msg.to_string());
-        }
+
+        let (message,message_list) = message_handle(event.message.clone(), event.raw_message.clone());
         info!("G::{} >Q::{} > {:?}",&event.group_id,&event.user_id,&message);
         Self {
             group_id: event.group_id.clone(),
             user_id:event.user_id.clone(),
             message_id: event.message_id.clone(),
             message,
-            message_list: vec,
+            message_list,
             sender: event.sender.clone(),
             bot: bot.clone(),
         }

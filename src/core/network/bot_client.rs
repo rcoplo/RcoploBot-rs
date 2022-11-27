@@ -15,7 +15,8 @@ use crate::core::component::event::{Event, PostType};
 use crate::core::component::message::text;
 
 use serde::{Deserialize, Serialize};
-use crate::handler::event_handle;
+use crate::bot::event_handle;
+use crate::core::event::{EventHandler, GroupMessageEvent};
 
 use crate::service::CONTEXT;
 
@@ -48,7 +49,7 @@ impl WsClient {
             resp_promises: resp_promises.clone(),
         };
 
-        // let (wr,re) = ws_steam.split();
+
         info!("[Bot] [client] WebSocket handshake has been successfully completed");
 
         // 发送 api
@@ -60,6 +61,7 @@ impl WsClient {
                 }
             }
         });
+
         // 获取 api
         let mut recv_task = tokio::spawn(async move {
             while let Some(msg) = ws_in.next().await {
@@ -68,7 +70,9 @@ impl WsClient {
                     Message::Text(msg) => {
                         let json: Value = serde_json::from_str(msg.as_str()).unwrap();
                         let mut bot = bot.clone();
+
                         tokio::spawn(async move {
+                            //将数据 转换成具体结构体
                             let event = Event::get_event(json);
                             match event {
                                 Some(event) => {
@@ -116,7 +120,9 @@ impl WsClient {
                                     }
                                 }
 
-                                None => {}
+                                None => {
+                                    //什么事件都没匹配到...
+                                }
                             }
                         });
                     }

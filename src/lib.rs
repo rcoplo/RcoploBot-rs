@@ -5,10 +5,9 @@
 extern crate rbatis;
 
 #[macro_use]
-pub mod handler;
+pub mod bot;
 pub mod core;
 pub mod config;
-pub mod api;
 pub mod util;
 pub mod domain;
 pub mod service;

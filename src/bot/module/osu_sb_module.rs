@@ -4,9 +4,9 @@ use crate::core::bot::Bot;
 use crate::core::event::Event;
 use crate::core::group::Group;
 use crate::core::message::text;
-use crate::handler::api::osu_sb::{get_sou_sb_scores, OsuSbScores};
-use crate::handler::bot_help::{BOT_HELP, BotHelp, Help};
-use crate::handler::log_result;
+use crate::bot::api::osu_sb::{get_sou_sb_scores, OsuSbScores};
+use crate::bot::bot_help::{BOT_HELP, BotHelp, Help};
+use crate::bot::log_result;
 use crate::util::regex_utils::contain;
 
 pub struct OsuSbHelp;

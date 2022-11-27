@@ -47,10 +47,10 @@ pub fn contain_list(sources: &str, value: Vec<Vec<&str>>) -> bool {
     false
 }
 
-pub fn replace_regex_all(regex: &str, rep: &str, value: String) -> Value {
+pub fn replace_regex_all(regex: &str, rep: &str, value: String) -> String {
     let set = Regex::new(&regex).unwrap();
     let s2 = set.replace_all(&value, rep);
-    Value::from(s2.to_string())
+    s2.to_string()
 }
 
 fn replace_regex(regex: &str, rep: &str, value: String) -> String {

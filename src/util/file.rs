@@ -60,7 +60,7 @@ pub fn get_tmp_path(file:Vec<&str>) -> String{
     }
 }
 
-pub fn generate_random_tmp_image_path(name:&str,ext:&str,file:Vec<&str>) ->String{
+pub fn tmp_random_image_path(name:&str,ext:&str,file:Vec<&str>) ->String{
     let file = get_tmp_path(file);
     let string = uuid::Uuid::new_v4().to_string();
     let string1 = string.replace("-", "_");

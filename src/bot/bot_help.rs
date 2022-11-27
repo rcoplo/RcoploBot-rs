@@ -1,16 +1,22 @@
 
 use std::collections::HashMap;
 use once_cell::sync::Lazy;
+use rand::Rng;
+use serde_json::{Map, Value};
 use crate::core::bot::Bot;
 use crate::core::event::Event;
-use crate::handler::{AiHelp, OsuSbHelp, SetuHelp, SignHelp};
+use crate::bot::{AiHelp, OsuSbHelp, SetuHelp, SignHelp};
+use crate::core::group::Group;
+use crate::util::file::{get_image_path, tmp_random_image_path};
+use crate::util::regex_utils::contain;
 
 pub static BOT_HELP: Lazy<HelpList> = Lazy::new(|| HelpList::default());
 
 pub trait BotHelp {
     fn new() -> Help<'static>;
 }
-#[derive(Debug)]
+
+#[derive(Debug,Clone)]
 pub struct Help<'a>  {
     //模块名
     pub module_name: String,
@@ -27,11 +33,6 @@ pub struct Help<'a>  {
 pub struct HelpList<'a> {
     pub help: HashMap<String, Help<'a>>,
 }
-
-pub async fn bot_help_handle(event: Event, bot: &mut Bot) {}
-
-pub async fn bot_help_group_image() {}
-
 impl Default for HelpList<'_> {
     fn default() -> Self {
         let mut map = HashMap::new();
@@ -43,4 +44,16 @@ impl Default for HelpList<'_> {
             help: map
         }
     }
+}
+
+
+pub async fn bot_help_group_handle(group:&mut Group, function: &Map<String, Value>) {
+    if contain(&group.message,&vec!["/help","!help","！help"]){
+        bot_help_group_image(group, function).await;
+    }
+}
+
+
+pub async fn bot_help_group_image(group:&mut Group, function: &Map<String, Value>) {
+
 }

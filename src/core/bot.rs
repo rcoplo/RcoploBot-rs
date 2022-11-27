@@ -7,9 +7,10 @@ use log::info;
 
 use serde_json::{Error, json, Map, Value};
 use serde::{Deserialize, Serialize};
-use crate::api::*;
+use crate::core::api::*;
 
 use crate::core::component::message::Message;
+use crate::core::message::message_type_handle;
 
 
 #[derive(Debug, Clone)]
@@ -1357,4 +1358,15 @@ impl Bot {
             None
         }
     }
+}
+pub fn message_handle(message:Vec<Message>,raw_message:String) -> (String,Vec<String>){
+    let mut vec = vec![];
+    //将string[] message 消息格式化
+    let message = message_type_handle(message);
+    //将raw_message 以空格分组
+    let msg_list:Vec<_> = raw_message.split_whitespace().collect();
+    for msg in msg_list {
+        vec.push(msg.to_string());
+    }
+    (message,vec)
 }

@@ -14,9 +14,9 @@ use crate::core::friend::Friend;
 use crate::core::group::Group;
 use crate::core::message::*;
 use crate::domain::Setu;
-use crate::handler::api::{get_lolicon, get_lolicon_list, get_lolicon_list_tag, get_lolicon_tag};
-use crate::handler::{log_result, log_result_by_return, meow_err, meow_log};
-use crate::handler::bot_help::{BOT_HELP, BotHelp, Help};
+use crate::bot::api::{get_lolicon, get_lolicon_list, get_lolicon_list_tag, get_lolicon_tag};
+use crate::bot::{log_result, log_result_by_return, meow_err, meow_log};
+use crate::bot::bot_help::{BOT_HELP, BotHelp, Help};
 use crate::service::{CONTEXT, GroupFunctionService, SetuService};
 use crate::util::regex_utils::{contain};
 

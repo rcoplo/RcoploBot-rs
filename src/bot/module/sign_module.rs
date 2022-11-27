@@ -5,8 +5,8 @@ use rbatis::rbdc::datetime::FastDateTime;
 use crate::core::group::Group;
 use crate::core::message::{at, text};
 use crate::domain::SignGroupUsers;
-use crate::handler::{bot_name_compound, log_result};
-use crate::handler::bot_help::{BOT_HELP, BotHelp, Help};
+use crate::bot::{ log_result};
+use crate::bot::bot_help::{BOT_HELP, BotHelp, Help};
 use crate::service::{CONTEXT, SignGroupUsersService};
 use crate::util::regex_utils::{contain, rex_utils};
 

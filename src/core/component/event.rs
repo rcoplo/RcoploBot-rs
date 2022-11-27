@@ -3,7 +3,8 @@ use futures_util::StreamExt;
 use log::info;
 use serde::{Deserialize, Serialize};
 use serde_json::{Error, Value};
-use crate::api::ApiResult;
+use crate::core::api::ApiResult;
+use crate::core::bot::Bot;
 use crate::core::component::event;
 use crate::core::message::Message;
 
@@ -63,7 +64,20 @@ pub enum Event {
     EssenceMessage(EssenceMessage),
     ApiResult(ApiResult),
 }
+pub trait EventHandler{
+    fn handle(json: &Value, bot: &mut Bot);
+}
 
+impl EventHandler for GroupMessageEvent {
+    fn handle(json: &Value, bot: &mut Bot) {
+        let notice_type = json["message_type"].as_str().unwrap_or("null");
+        if !notice_type.eq("group"){
+            return;
+        }
+        let group_message_event = serde_json::from_value::<GroupMessageEvent>(json.clone()).unwrap();
+        info!("{:?}",group_message_event);
+    }
+}
 impl Event {
     pub fn get_event(v: Value) -> Option<Event> {
         let post_type = Self::is(v);

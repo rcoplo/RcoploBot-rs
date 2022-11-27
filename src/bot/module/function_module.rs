@@ -10,8 +10,8 @@ use crate::core::friend::Friend;
 use crate::core::group::Group;
 use crate::core::message::text;
 use crate::domain::GroupFunction;
-use crate::handler::bot_help::BOT_HELP;
-use crate::handler::{log_result, meow_err, meow_ok, meow_warn};
+use crate::bot::bot_help::BOT_HELP;
+use crate::bot::{log_result, meow_err, meow_ok, meow_warn};
 
 use crate::pool;
 use crate::service::{CONTEXT, GroupFunctionService};

@@ -8,7 +8,7 @@ pub struct Request {
     pub user_id: i64,
     pub comment: String,
     pub flag: String,
-    pub bot: Bot,
+    bot: Bot,
 }
 
 impl Request {

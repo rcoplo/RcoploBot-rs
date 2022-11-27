@@ -56,10 +56,20 @@ impl SignGroupUsersService {
             Err(_) => false
         }
     }
+    pub async fn select_sign_list(group_id:&i64) ->Option<Vec<SignGroupUsers>>{
+        let sign = SignGroupUsers::new(*user_id,*group_id);
+        let result = SignGroupUsers::select_sign_list(pool!(), &group_id).await;
+        match result {
+            Ok(data) => {
+                Some(data)
+            }
+            Err(_) => None
+        }
+    }
 }
 
 impl SignGroupUsers {
-   pub fn new(user_id:i64,group_id:i64) -> Self {
+    fn new(user_id:i64,group_id:i64) -> Self {
         let sign_scope = &CONTEXT.config.sign_in.sign_scope;
         let impression = rand::thread_rng().gen_range(0.0..*sign_scope);
         Self{
