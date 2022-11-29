@@ -11,4 +11,5 @@ pub mod config;
 pub mod util;
 pub mod domain;
 pub mod service;
+mod error;
 

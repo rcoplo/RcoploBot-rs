@@ -19,12 +19,12 @@ use RcoploBot_rs::util::sign_image;
 
 #[tokio::main]
 async fn main() {
-    // env::set_var("RUST_APP_LOG", "info");
-    // pretty_env_logger::init_custom_env("RUST_APP_LOG");
-    // info!("Starting rbatis...");
-    // CONTEXT.init_pool().await;
-    // info!("Starting client...");
-    // WsClient::run().await;
-    sign_image();
+    env::set_var("RUST_APP_LOG", "info");
+    pretty_env_logger::init_custom_env("RUST_APP_LOG");
+    info!("Starting rbatis...");
+    CONTEXT.init_pool().await;
+    info!("Starting client...");
+    WsClient::run().await;
+    // sign_image();
 }
 

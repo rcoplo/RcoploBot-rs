@@ -29,6 +29,7 @@ pub struct  ServiceContext {
     pub config: ApplicationConfig,
     pub bot_config: BotConfig,
     pub rbatis :Rbatis,
+    pub setu_service:SetuService,
 }
 
 impl ServiceContext {
@@ -61,6 +62,7 @@ impl Default for ServiceContext{
             rbatis:crate::domain::init_rbatis(&config),
             config,
             bot_config,
+            setu_service: SetuService {},
         }
     }
 }

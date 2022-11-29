@@ -11,6 +11,7 @@ use crate::service::{CONTEXT, SignGroupUsersService};
 use crate::util::file::get_data_path;
 use crate::util::regex_utils::{contain, contain_, rex_utils};
 use std::default::Default;
+use std::fmt::Formatter;
 use rbatis::rbdc::datetime::FastDateTime;
 use crate::bot::log_result;
 use crate::domain::SignGroupUsers;
@@ -89,3 +90,5 @@ impl Ai {
         ai
     }
 }
+
+

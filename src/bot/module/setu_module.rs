@@ -218,7 +218,7 @@ async fn setu_group(group: &mut Group) {
                 }
                 Some(result) => {
                     tokio::spawn( async move{
-                        delete_msg(&mut group, result.message_id,&CONTEXT.config.setu.withdraw_time).await;
+                        delete_msg(&mut group, result.message_id,CONTEXT.config.setu.withdraw_time).await;
                     });
                 }
             }
@@ -243,6 +243,7 @@ async fn setu_group_list(group: &mut Group) {
                     text(format!("pid: {}\n", s.pid.unwrap()).as_str()),
                     image(s.urls.unwrap().as_str()),
                 ];
+
                 let result = group.send_group_msg(vec).await;
                 let result_return = log_result_by_return(result);
                 match result_return {
@@ -253,7 +254,7 @@ async fn setu_group_list(group: &mut Group) {
                     Some(result) => {
                         let mut group = group.clone();
                         tokio::spawn(  async move{
-                            delete_msg(&mut group, result.message_id,&CONTEXT.config.setu.withdraw_time).await;
+                            delete_msg(&mut group, result.message_id,CONTEXT.config.setu.withdraw_time).await;
                         });
                     }
                 }
@@ -296,7 +297,7 @@ async fn setu_group_list_tag(group: &mut Group) {
                     Some(result) => {
                         let mut group = group.clone();
                         tokio::spawn(async move{
-                            delete_msg(&mut group, result.message_id,&CONTEXT.config.setu.withdraw_time).await;
+                            delete_msg(&mut group, result.message_id,CONTEXT.config.setu.withdraw_time).await;
                         });
                     }
                 }
@@ -333,7 +334,7 @@ async fn setu_group_tag(group: &mut Group) {
                 }
                 Some(result) => {
                     tokio::spawn( async move{
-                        delete_msg(&mut group, result.message_id,&CONTEXT.config.setu.withdraw_time).await;
+                        delete_msg(&mut group, result.message_id,CONTEXT.config.setu.withdraw_time).await;
                     });
                 }
             }
@@ -361,7 +362,7 @@ async fn rand_setu_group(group: &mut Group) {
                 }
                 Some(result) => {
                     tokio::spawn(  async move{
-                        delete_msg(&mut group, result.message_id,&CONTEXT.config.setu.withdraw_time).await;
+                        delete_msg(&mut group, result.message_id,CONTEXT.config.setu.withdraw_time).await;
                     });
                 }
             }
@@ -370,8 +371,8 @@ async fn rand_setu_group(group: &mut Group) {
 }
 
 
-async fn delete_msg(group: &mut Group,message_id:i64, time: &u64) {
-    time::sleep(time::Duration::from_secs(*time)).await;
+async fn delete_msg(group: &mut Group,message_id:i64, time: u64) {
+    time::sleep(time::Duration::from_secs(time)).await;
     let result = group.delete_msg(message_id).await;
     match result {
         None => {}

@@ -27,7 +27,7 @@ impl Group {
     pub fn new(event: &GroupMessageEvent, bot:&mut Bot) -> Self {
 
         let (message,message_list) = message_handle(event.message.clone(), event.raw_message.clone());
-        info!("G::{} >Q::{} > {:?}",&event.group_id,&event.user_id,&message);
+        info!("G::{} > Q::{} > {:?}",&event.group_id,&event.user_id,&message);
         Self {
             group_id: event.group_id.clone(),
             user_id:event.user_id.clone(),

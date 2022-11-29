@@ -15,8 +15,20 @@ use crate::bot::bot_help::bot_help_group_handle;
 use crate::service::{CONTEXT, GroupFunctionService, SetuService};
 use crate::util::regex_utils::contain;
 
-
 pub async fn event_handle(event: Event, bot: &mut Bot) {
+    let group = match &event {
+        Event::GroupMessageEvent(event) => {
+            Some(Group::new(event, bot))
+        }
+        _ => None
+    };
+    let friend = match &event {
+        Event::FriendMessageEvent(event) => {
+            Some(Friend::new(event, bot))
+        }
+        _ => None
+    };
+
     let group_id = get_group_id(&event);
     //获取group_id 方便管理群功能
     match group_id {
@@ -34,12 +46,6 @@ pub async fn event_handle(event: Event, bot: &mut Bot) {
                     let string = fun.function_list.unwrap();
                     let result: Value = serde_json::from_str(string.as_str()).unwrap();
                     let function = result.as_object().unwrap();
-                    let group = match &event {
-                        Event::GroupMessageEvent(event) => {
-                            Some(Group::new(event, bot))
-                        }
-                        _ => None
-                    };
 
                     if function.get("groupHelp").unwrap().as_bool() == Some(true) {
                         group_change_handle(&event, bot).await;
@@ -70,10 +76,16 @@ pub async fn event_handle(event: Event, bot: &mut Bot) {
             }
         }
     }
-
+    match friend {
+        None => {}
+        Some(mut friend) => {
+            setu_friend_handle(&mut friend).await;
+        }
+    }
+    
     match &event {
         Event::FriendMessageEvent(event) => {
-            setu_friend_handle(&mut Friend::new(event, bot)).await;
+
         }
         Event::AddFriendRequest(event) => {
             friend_handle_module(&mut Request::new_add_friend(event, bot)).await;

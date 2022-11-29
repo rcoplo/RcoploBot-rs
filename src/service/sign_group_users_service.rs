@@ -24,8 +24,7 @@ impl SignGroupUsersService {
         match sign {
             None => false,
             Some(data) => {
-                let sign_scope = &CONTEXT.config.sign_in.sign_scope;
-                let impression = rand::thread_rng().gen_range(0.0..*sign_scope);
+                let impression = rand::thread_rng().gen_range(0.0..CONTEXT.config.sign_in.sign_scope);
                 let sign = SignGroupUsers {
                     checkin_count: Some(data.checkin_count.unwrap() + 1),
                     checkin_count_last: Some(FastDateTime::now()),
@@ -57,7 +56,7 @@ impl SignGroupUsersService {
         }
     }
     pub async fn select_sign_list(group_id:&i64) ->Option<Vec<SignGroupUsers>>{
-        let sign = SignGroupUsers::new(*user_id,*group_id);
+        // let sign = SignGroupUsers::new(*user_id,*group_id);
         let result = SignGroupUsers::select_sign_list(pool!(), &group_id).await;
         match result {
             Ok(data) => {
@@ -70,8 +69,7 @@ impl SignGroupUsersService {
 
 impl SignGroupUsers {
     fn new(user_id:i64,group_id:i64) -> Self {
-        let sign_scope = &CONTEXT.config.sign_in.sign_scope;
-        let impression = rand::thread_rng().gen_range(0.0..*sign_scope);
+        let impression = rand::thread_rng().gen_range(0.0..CONTEXT.config.sign_in.sign_scope);
         Self{
             id: 0,
             user_id: Some(user_id),

@@ -6,7 +6,7 @@ use regex::internal::Input;
 use crate::domain::{ Setu};
 use crate::pool;
 
-pub struct SetuService;
+pub struct SetuService{}
 
 impl SetuService {
     pub async fn query_setu_pid(pid: i64) -> Option<Setu> {

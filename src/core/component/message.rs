@@ -1,5 +1,7 @@
 use std::array::IntoIter;
 use std::collections::HashMap;
+use std::fmt;
+use std::fmt::{Display, Formatter};
 use log::info;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -291,32 +293,31 @@ pub fn tts(text: &str) -> Message {
     }
 }
 
-impl ToString for Message {
-    fn to_string(&self) -> String {
+impl Display for Message {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self.r#type.as_str() {
             "text" => {
-                format!("{}",
-                        self.data.get("text").unwrap_or(&"null".to_string()),)
+                write!(f,"{}", self.data.get("text").unwrap_or(&"null".to_string()))
             }
             "face" => {
-                format!("face{{{}}}",
+                write!(f,"face{{{}}}",
                         self.data.get("face").unwrap_or(&"null".to_string()),)
             }
             "record" => {
-                format!("record{{{},{}}}",
+                write!(f,"record{{{},{}}}",
                         self.data.get("file").unwrap_or(&"null".to_string()),
                         self.data.get("url").unwrap_or(&"null".to_string()))
             }
             "video" => {
-                format!("video{{{}}}", self.data.get("file").unwrap_or(&"null".to_string()),)
+                write!(f,"video{{{}}}", self.data.get("file").unwrap_or(&"null".to_string()),)
             }
             "at" => {
-                format!("at{{{},{}}}",
+                write!(f,"at{{{},{}}}",
                         self.data.get("qq").unwrap_or(&"null".to_string()),
                         self.data.get("name").unwrap_or(&"null".to_string()))
             }
             "share" => {
-                format!("share{{{},{},{},{}}}",
+                write!(f,"share{{{},{},{},{}}}",
                         self.data.get("url").unwrap_or(&"null".to_string()),
                         self.data.get("title").unwrap_or(&"null".to_string()),
                         self.data.get("content").unwrap_or(&"null".to_string()),
@@ -324,48 +325,48 @@ impl ToString for Message {
                 )
             }
             "image" => {
-                format!("image{{{},{},{}}}",
+                write!(f,"image{{{},{},{}}}",
                         self.data.get("url").unwrap_or(&"null".to_string()),
                         self.data.get("file").unwrap_or(&"null".to_string()),
                         self.data.get("subType").unwrap_or(&"null".to_string()),
                 )
             }
             "reply" => {
-                format!("reply{{{},{},{}}}",
+                write!(f,"reply{{{},{},{}}}",
                         self.data.get("id").unwrap_or(&"null".to_string()),
                         self.data.get("qq").unwrap_or(&"null".to_string()),
                         self.data.get("text").unwrap_or(&"null".to_string()),
                 )
             }
             "redbag" => {
-                format!("redbag{{{}}}",
+                write!(f,"redbag{{{}}}",
                         self.data.get("title").unwrap_or(&"null".to_string()),
                 )
             }
             "forward" => {
-                format!("forward{{{}}}",
+                write!(f,"forward{{{}}}",
                         self.data.get("id").unwrap_or(&"null".to_string()),
                 )
             }
             "xml" => {
-                format!("xml{{{},{}}}",
+                write!(f,"xml{{{},{}}}",
                         self.data.get("data").unwrap_or(&"null".to_string()),
                         self.data.get("resid").unwrap_or(&"null".to_string()),
                 )
             }
             "json" => {
-                format!("json{{{},{}}}",
+                write!(f,"json{{{},{}}}",
                         self.data.get("data").unwrap_or(&"null".to_string()),
                         self.data.get("resid").unwrap_or(&"null".to_string()),
                 )
             }
             _ => {
-                format!("null")
+                write!(f,"null")
             }
         }
-
     }
 }
+
 pub fn message_type_handle(message: Vec<Message>) -> String {
     let mut str = String::new();
     for msg in message {
@@ -374,7 +375,6 @@ pub fn message_type_handle(message: Vec<Message>) -> String {
     }
     str
 }
-
 
 
 

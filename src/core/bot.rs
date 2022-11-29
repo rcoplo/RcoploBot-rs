@@ -63,11 +63,7 @@ impl Bot {
     }
 
 
-    pub async fn send_private_msg(
-        &mut self,
-        user_id: i64,
-        message: Vec<Message>,
-    ) -> Option<ResultFrame> {
+    pub async fn send_private_msg(&mut self, user_id: i64, message: Vec<Message>, ) -> Option<ResultFrame> {
         let re = SendPrivateMsg {
             user_id,
             message,

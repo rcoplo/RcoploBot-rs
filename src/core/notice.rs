@@ -15,7 +15,7 @@ pub struct Notice<E> {
 
 impl Notice<GroupFileUpload> {
     pub fn new_group_file_upload(event: &GroupFileUpload, bot: &mut Bot) -> Notice<GroupFileUpload> {
-        Notice {
+      Notice {
             notice_type: event.notice_type.clone(),
             sub_type: "".to_string(),
             event: event.clone(),
