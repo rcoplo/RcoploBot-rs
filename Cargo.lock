@@ -6,7 +6,6 @@ version = 3
 name = "RcoploBot-rs"
 version = "0.1.0"
 dependencies = [
- "font-kit",
  "futures-channel",
  "futures-util",
  "image",

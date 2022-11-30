@@ -36,7 +36,7 @@ image = "0.24.5"
 imageproc = "0.23.0"
 plotters = "0.3.4"
 #raqote = "0.8.1"
-font-kit = { version = "0.11.0" }
+#font-kit = { version = "0.11.0" }
 
 [target.x86_64-pc-windows-msvc]
 rustflags = ["-C", "target-feature=+crt-static"]

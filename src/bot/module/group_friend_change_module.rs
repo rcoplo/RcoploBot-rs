@@ -54,6 +54,7 @@ pub async fn member_change_increase_handle_module(increase: &mut Notice<GroupMem
     let result = increase.send_group_msg(vec![at(&increase.event.user_id), text(" 欢迎大佬入群~~")]).await;
     log_result(result);
 }
+
 //群成员减少
 pub async fn member_change_decrease_handle_module(decrease: &mut Notice<GroupMemberDecrease>) {
     let stranger = decrease.get_stranger_info().await;
@@ -61,14 +62,13 @@ pub async fn member_change_decrease_handle_module(decrease: &mut Notice<GroupMem
         None => {}
         Some(stranger) => {
             if decrease.sub_type == "leave"{
-                let result = decrease.send_group_msg(vec![text(&stranger.nickname), text(" 离开了我们")]).await;
+                let result = decrease.send_group_msg(vec![text(&stranger.nickname), text(" 离开了我们...")]).await;
                 log_result(result);
             }
             if decrease.sub_type == "kick"{
-                let result = decrease.send_group_msg(vec![text(&stranger.nickname), text(" 被踢乐")]).await;
+                let result = decrease.send_group_msg(vec![text(&stranger.nickname), text(" 被踢乐...")]).await;
                 log_result(result);
             }
-
         }
     }
 

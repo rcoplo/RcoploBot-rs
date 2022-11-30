@@ -4,7 +4,7 @@ use image::ImageFormat;
 use image::imageops::FilterType;
 use plotters::prelude::{BitMapBackend, BitMapElement, ChartBuilder, DrawingBackend, IntoDrawingArea, LabelAreaPosition, WHITE};
 use crate::util::file::{get_image_path, tmp_random_image_path};
-
+//摸了 plotters 画图有点难
 pub fn sign_image()  {
     let tmp = tmp_random_image_path("sign", "png", vec!["sign"]);
     let sign_background = get_image_path(vec!["sign","sign_background.png"]);
