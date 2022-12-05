@@ -1,0 +1,52 @@
+{
+  "status": "success",
+  "scores": [
+    {
+      "id": 1067345,
+      "score": 154975,
+      "pp": 0,
+      "acc": 94.762,
+      "max_combo": 399,
+      "mods": 0,
+      "n300": 680,
+      "n100": 34,
+      "n50": 8,
+      "nmiss": 48,
+      "ngeki": 1436,
+      "nkatu": 136,
+      "grade": "F",
+      "status": 0,
+      "mode": 3,
+      "play_time": "2022-11-19T22:35:50",
+      "time_elapsed": 118380,
+      "perfect": 0,
+      "beatmap": {
+        "md5": "55a0b017aaa981e346820ec13bdcfbce",
+        "id": 3869409,
+        "set_id": 1879554,
+        "artist": "Various Artists",
+        "title": "6K Jumpstream Dan Course - Part II",
+        "version": "5th Dan",
+        "creator": "QQwiwi2012",
+        "last_update": "2022-11-09T11:58:40",
+        "total_length": 623,
+        "max_combo": 11650,
+        "status": 3,
+        "plays": 3,
+        "passes": 0,
+        "mode": 3,
+        "bpm": 150,
+        "cs": 6,
+        "od": 8,
+        "ar": 5,
+        "hp": 8,
+        "diff": 6.22041
+      }
+    }
+  ],
+  "player": {
+    "id": 4149,
+    "name": "幼女",
+    "clan": null
+  }
+}

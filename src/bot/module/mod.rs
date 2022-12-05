@@ -1,0 +1,30 @@
+pub mod setu_module;
+pub mod group_recreational_module;
+pub mod sign_module;
+pub mod function_module;
+pub mod ai_module;
+pub mod bilibili_module;
+pub mod bot_module;
+pub mod group_friend_change_module;
+pub mod mc_mcsm_module;
+pub mod mc_module;
+pub mod osu_module;
+pub mod osu_sb_module;
+pub mod question_answer_module;
+pub mod search_image_module;
+
+
+pub use  setu_module::*;
+pub use  group_recreational_module::*;
+pub use  sign_module::*;
+pub use  function_module::*;
+pub use  ai_module::*;
+pub use  bilibili_module::*;
+pub use  bot_module::*;
+pub use  group_friend_change_module::*;
+pub use  mc_mcsm_module::*;
+pub use  mc_module::*;
+pub use  osu_module::*;
+pub use  osu_sb_module::*;
+pub use  question_answer_module::*;
+pub use  search_image_module::*;
