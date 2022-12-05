@@ -1,0 +1,7 @@
+type: "ws"
+url: "ws://192.168.5.248:6705"
+access_token: ""
+super_administrator:
+  - 2939599299
+bot_name: "猫猫"
+bot_id: 3429912060
