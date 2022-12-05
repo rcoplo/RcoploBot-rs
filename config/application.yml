@@ -1,5 +1,5 @@
 debug: false
-database_url: "mysql://{root}:{host}:{port}/{database}"
+database_url: "mysql://{root}:{password}@{host}:{port}/{database}"
 
 bili_cookie:
   SESSDATA: ""
